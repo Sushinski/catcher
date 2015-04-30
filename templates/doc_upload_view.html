@@ -5,11 +5,11 @@
     <title>Загрузка файла</title>
 </head>
 <body>
-    <form action="result/" method="post">
+    <form enctype="multipart/form-data"  method="post" action="result/">
         {% csrf_token %}
          <br><br>
-        <label for="ulp_file_name">Выберите файл для загрузки</label>
-        <input type="file" value="upl_file" id="ulp_file_name"/>
+        <label for="upl_file_name">Выберите файл для загрузки</label>
+        <input type="file" name="upl_file" id="upl_file_name"/>
         <input type="submit" value="Загрузить">
     </form>
 </body>

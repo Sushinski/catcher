@@ -1,11 +1,10 @@
 __author__ = 'mac'
 import xlrd
-from prefs import UPLOADED_FILES_LOC as UFL
 
 
 class Workbook(object):
     def __init__(self, filename):
-        self.workbook = xlrd.open_workbook(UFL + filename)
+        self.workbook = xlrd.open_workbook(filename)
         self.sheets = [self.workbook.sheet_by_index(i) for i in range(self.workbook.nsheets)]
 
     def load_file(self):

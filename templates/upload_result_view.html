@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title>Анализ загруженного файла</title>
+</head>
+<body>
+        {% csrf_token %}
+        <table border="1">
+        <tr>
+            <th>номер пп</th>
+            <th>Лист</th>
+            <th>Размерность</th>
+        </tr>
+        {% for r in view.rows %}
+            <tr>
+            <td> {{ r.0.0 }} </td>
+            <td> {{ r.0.1 }} </td>
+            <td> {{ r.1.0 }} : {{ r.1.1 }} </td>
+            </tr>
+        {% endfor %}
+        </table>
+</body>
+</html>
