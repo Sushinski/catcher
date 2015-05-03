@@ -15,9 +15,8 @@
                     <th>Введите диапазоны строк для загрузки<br>
                         в виде (1-10),(12-22), и далее
                     </th>
-                    <th>Введите номера колонок для полей: <br>
-                        Назв.компании, цена, площадь, район,<br>
-                        количество комнат в виде: 2, 4, 1, 3, 2
+                    <th>Введите названия колонок для полей: <br>
+                        Цена, площадь, район,количество комнат
                     </th>
                 </tr>
                 {% for r in view.rows %}
@@ -25,11 +24,12 @@
                     <td> {{ r.0.0 }} </td>
                     <td> {{ r.0.1 }} </td>
                     <td> {{ r.1.0 }} : {{ r.1.1 }} </td>
-                    <td align="middle"><input type="text" name="range" size="45" id="range{{ r.0.0 }}"></td>
-                    <td align="middle"><input type="text" name="map" size="45" id="map{{ r.0.0 }}"></td>
+                    <td align="middle"><input type="text" name="range{{ r.0.0 }}" size="45" id="range{{ r.0.0 }}"></td>
+                    <td align="middle"><input type="text" name="map{{ r.0.0 }}" size="45" id="map{{ r.0.0 }}"></td>
                     </tr>
                 {% endfor %}
             </table>
+            <input type="submit" value="Разобрать файл">
         </form>
 </body>
 </html>

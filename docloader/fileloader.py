@@ -20,3 +20,6 @@ class Workbook(object):
 
     def sheet_names(self):
         return [name for name in self.workbook.sheet_names()]
+
+    def get_sheet(self, index):
+        return self.workbook.sheet_by_index(index)

@@ -1,6 +1,7 @@
 __author__ = 'mac'
 import unittest
 from docloader.fileloader import Workbook
+from catcher.settings import UPLOAD_DIR
 
 
 class LoadTester(unittest.TestCase):
@@ -11,7 +12,7 @@ class LoadTester(unittest.TestCase):
 
     def test_get_dimensions(self):
         try:
-            wb = Workbook('test1.xls')
+            wb = Workbook(UPLOAD_DIR + 'test1.xls')
             lz = zip(wb.sheet_names(), wb.dimensions())
             print ','.join(['%s - (%d:%d)' % (l[0], l[1][0], l[1][1]) for l in lz])
             self.assertTrue(True)
