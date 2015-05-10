@@ -5,31 +5,33 @@
     <title>Анализ загруженного файла</title>
 </head>
 <body>
-        <form action="parse_upload/" method="post">
-            {% csrf_token %}
-            <table border="1">
+    <h1>Анализ загруженного файла</h1>
+    <form action="parse_upload/" method="post">
+        {% csrf_token %}
+        {% for sh in view.sheets %}
+            <table border="1" title="{{ sh.name }}">
                 <tr>
-                    <th>номер пп</th>
-                    <th>Лист</th>
-                    <th>Размерность</th>
-                    <th>Введите диапазоны строк для загрузки<br>
-                        в виде (1-10),(12-22), и далее
-                    </th>
-                    <th>Введите названия колонок для полей: <br>
-                        Цена, площадь, район,количество комнат
-                    </th>
-                </tr>
-                {% for r in view.rows %}
-                    <tr>
-                    <td> {{ r.0.0 }} </td>
-                    <td> {{ r.0.1 }} </td>
-                    <td> {{ r.1.0 }} : {{ r.1.1 }} </td>
-                    <td align="middle"><input type="text" name="range{{ r.0.0 }}" size="45" id="range{{ r.0.0 }}"></td>
-                    <td align="middle"><input type="text" name="map{{ r.0.0 }}" size="45" id="map{{ r.0.0 }}"></td>
-                    </tr>
+                {% for h in sh.headlines.1 %}
+                    <th>{{ h }}</th>
                 {% endfor %}
+                </tr>
+                <tr>
+                {% for h in sh.headlines.1 %}
+                    <td align="middle">
+                        <select name="sel_{{ h }}">
+                            <option value="related" selected>Прочие</option>
+                            {% for opt in view.sel_options %}
+                                <option value={{ opt }}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                {% endfor %}
+                </tr>
             </table>
-            <input type="submit" value="Разобрать файл">
-        </form>
+            <br><br><br>
+        {% endfor %}
+        <br><br>
+         <input type="submit" value="Загрузить в базу">
+    </form>
 </body>
 </html>

@@ -23,3 +23,12 @@ class Workbook(object):
 
     def get_sheet(self, index):
         return self.workbook.sheet_by_index(index)
+
+    def get_sheet_by_name(self, name):
+        return self.workbook.sheet_by_name(name)
+
+
+class Sheet(object):
+    def __init__(self, name=''):
+        self.headlines = []
+        self.name = name

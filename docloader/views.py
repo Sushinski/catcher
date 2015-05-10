@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render
-from docloader import fileloader
+from docloader.fileloader import Workbook, Sheet
 from catcher.settings import UPLOAD_DIR
 from models import CompanyRecord, FlatRecord
 
 wb = None
 DOC_FIELDS = ('price', 'area', 'district', 'rooms')
+DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Район', u'Кол-во комнат')
+DOC_FIELDS_DICT = dict(zip(DOC_RU_FIELDS, DOC_FIELDS))
 
 
 def upload_view(request):
@@ -35,9 +38,37 @@ def handle_uploaded_file(f):
 
 class UploadResultView():
     def __init__(self, filename):
+        self.sheets = []  # страницы, содержащие headlines - заголовки
+        self.sel_options = DOC_RU_FIELDS  # варианты целевых полей в базе
         global wb
-        wb = fileloader.Workbook(filename)
-        self.rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
+        wb = Workbook(filename)
+        self.wb = wb
+        # self.rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
+        # todo сделать анализ строк листов на заголовки
+        sheet_names = wb.sheet_names()
+        for sh in sheet_names:
+            sheet = Sheet(sh)
+            sheet.headlines = self.get_sheet_headlines(sh)
+            self.sheets.append(sheet)
+
+    def get_sheet_headlines(self, sheet_name):
+        res = None
+        sheet = self.wb.get_sheet_by_name(sheet_name)
+        # определяем максимальное количество заполненых колонок
+        max_len = 0
+        cur_len = 0
+        for i in range(sheet.nrows):
+            cur_row = sheet.row_values(i)  # получим текущую строку
+            for fld in cur_row:  # подсчитаем длинну ненулевых символов
+                if fld is not None and fld != '':
+                    cur_len += 1  # len(cur_row)  # длинна текущей строки(todo  - определяем не по длинне)
+            if cur_len > max_len:
+                max_len = cur_len  # если строка длинне текщей максимальной - обновляем
+                res = (i, cur_row)  # сохраняем текущую максимальную строку
+            cur_len = 0
+        return res
+
+
 
 
 def parse_uploaded_file(request):
