@@ -1,0 +1,295 @@
+@import url("style1.css");
+
+
+.shapka1 {
+	padding:0px;
+margin:0px;
+width: 100%;
+height: 50px;
+position:relative;
+overflow:hidden;
+background:#cacfdc url(img/shapka1.jpg) left top no-repeat;
+}
+.shapka2 {
+	padding:0px;
+margin:0px;
+width: 100%;
+height: 50px;
+position:relative;
+overflow:hidden;
+background:#cacfdc url(img/shapka2.jpg) left top no-repeat;
+}
+.shapka3 {
+	padding:0px;
+margin:0px;
+width: 100%;
+height: 50px;
+position:relative;
+overflow:hidden;
+background:#cacfdc url(img/shapka3.jpg) left top no-repeat;
+}
+
+html, body {
+padding:0px;
+margin:0px;
+width: 100%;
+height: 100%;
+}
+.page1 {
+min-height:100%;
+height:auto !important;
+height:100%;
+margin:0 auto -25px;
+}
+html .page1 {
+    height: 100%;
+}
+
+
+.hfooter1 { height: 25px; }
+
+.bottomfon1 {
+	color:#FFF;
+	padding:0px  ;
+	margin:0px ;
+	position:relative;
+	overflow:hidden;	
+	width:100%;
+	height:25px;
+	margin-top:-25px;
+	bottom:0;
+	background: #2e73b6; /* Old browsers */
+background: -moz-linear-gradient(left,  #2e73b6 0%, #004483 50%, #2e73b6 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, right top, color-stop(0%,#2e73b6), color-stop(50%,#004483), color-stop(100%,#2e73b6)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(left,  #2e73b6 0%,#004483 50%,#2e73b6 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(left,  #2e73b6 0%,#004483 50%,#2e73b6 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(left,  #2e73b6 0%,#004483 50%,#2e73b6 100%); /* IE10+ */
+background: linear-gradient(to right,  #2e73b6 0%,#004483 50%,#2e73b6 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2e73b6', endColorstr='#2e73b6',GradientType=1 ); /* IE6-9 */
+
+
+}
+.bottom1 {
+	position:relative;
+	overflow:hidden;
+	padding:5px 10px;
+	text-align:right;
+	font-size:12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background:url(img/bg.jpg) left top repeat;
+}
+
+.tekst {
+	font-family:  Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #363636;
+	text-align: justify;
+}
+.tekst-b {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #004483;
+	text-decoration: none;
+}
+
+
+
+
+.ssilki {
+	font-family:  Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+	color: #004483;
+	text-decoration: none;
+}
+.ssilka_kr {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #f36f31;
+	text-decoration: none;
+	text-align: center;
+}
+.ssilki_b {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #004483;
+	text-decoration: none;
+}
+.tekst-bel {
+	font-family:  Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration: none;
+}
+.unnamed1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #2e73b6;
+}
+.menu {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #fff;
+	text-decoration: none;
+}
+.menu2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #a6b7d3;
+	text-decoration: none;
+}
+.menu3 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #fff;
+	text-decoration: none;
+}
+.news {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #f36f31;
+	font-weight: bold;
+	text-align: center;
+}
+.tekst {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #004483;
+	text-align: justify;
+}
+.no-repit {
+	background-repeat: no-repeat;
+}
+.tekst-b {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #004483;
+	text-decoration: none;
+}
+.gr {
+	font-size: 10px;
+	color: #fff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+.small {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #004483;
+	font-weight: normal;
+	text-decoration: none;
+}
+.ssilki {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #004483;
+	text-decoration: none;
+}
+.ssilka2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	color: #363636;
+	text-decoration: none;
+}
+
+.ssilka_kr {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #f36f31;
+	text-decoration: none;
+	text-align: center;
+}
+.verx {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #004483;
+}
+.form1 {border:1px solid #FFFFFF; color:#363636; font-size:12px; width:163px; background-color:#e9e9f3}
+
+.form2 {border:1px solid #FFFFFF; color:#363636; font-size:12px; width:163px; background-color:#e9e9f3; height:350px}
+.tekst2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #363636;
+	text-align: left;
+}
+.tekst6 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	color: #363636;
+	border: thin solid #cacfdc;
+}
+.tekst7red {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	color: #A60000;
+}
+.ssilki2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #363636;
+	text-decoration: none;
+}
+
+.tablica1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	color: #363636;
+}
+
+
+.tekst3 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	color: #A60000;
+	font-weight: bold;
+	text-align: center;
+}
+.tekst4 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #A60000;
+	font-weight: bold;
+	text-align: center;
+}
+.tekst5 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #2e73b6;
+	font-weight: bold;
+}
+.no-repit {
+	background-repeat: no-repeat;
+}

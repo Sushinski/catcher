@@ -1,0 +1,65 @@
+
+
+
+/* ul-treefree */
+ul.ul-treefree { padding-left:25px; }
+ul.ul-treefree ul { margin:0; padding-left:6px; }
+ul.ul-treefree li { position:relative; list-style:none outside none; border-left:solid 1px #004483; margin:0; padding:0 0 0 19px; line-height:23px; }
+ul.ul-treefree li:before { content:''; display:block; border-bottom:solid 1px #004483; position:absolute; width:18px; height:11px; left:0; top:0; }
+ul.ul-treefree li:last-child { border-left:0 none; }
+ul.ul-treefree li:last-child:before { border-left:solid 1px #004483; }
+
+/* ul-dropfree */
+ul.ul-dropfree div.drop {
+width:15px;
+height:15px;
+position:absolute;
+z-index:10;
+top:4px;
+left:-8px;
+background-image: url('img/plus-minus.png');
+background-position:-15px 0;
+background-repeat:no-repeat;
+cursor:pointer;
+vertical-align: middle;
+background-position-x:-15px;
+}
+
+
+
+
+
+
+
+/* ul-tree */
+ul.ul-tree { padding-left:2em; padding-bottom:12px; }
+ul.ul-tree ul { margin:0; padding-left:17px; }
+ul.ul-tree li { position:relative; list-style:none outside none; border-left:1px solid rgba(0,0,0,.5); margin:0; line-height:24px; }
+ul.ul-tree p { position:relative; top:12px; margin:0 0 0 2.5em; padding:0 0; }
+ul.ul-tree p:before { content:''; display:block; border-bottom:1px solid rgba(0,0,0,.5); position:absolute; width:2.5em; height:24px; left:-2.5em; top:-12px; }
+ul.ul-tree li:last-child { border-left:0 none; }
+ul.ul-tree li:last-child > p:before { border-left:solid 1px rgba(0,0,0,.5); }
+
+/* ul-drop */
+ul.ul-drop div.drop {
+width:15px;
+height:15px;
+position:absolute;
+z-index:10;
+top:21px;
+left:14px;
+background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAALCAYAAAB7/H1+AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGtJREFUeNrck8EOwCAIQ9vF///lTjdniIEMDrusB43xgQUiAAi3Mnua5bV24UXsqrCHecVeeLw8NpBGYiZhVthWcYG81KYL7eXb82wr12AYG3/Y5djOZAQ6M9IW/LMeu46DUlms7pufdwowAAbFQP9vY58OAAAAAElFTkSuQmCC');
+background-position:-15px 0;
+background-repeat:no-repeat;
+cursor:pointer;
+}
+
+select.dir_sel{}
+select.dcs_sel{}
+select.cpo_sel{}
+
+.lcb{ vertical-align: middle; }
+
+
+
+
