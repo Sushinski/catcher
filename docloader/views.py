@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from docloader.fileloader import Workbook, Sheet
+from docloader.fileloader import Workbook
 from catcher.settings import UPLOAD_DIR
 from models import CompanyRecord, FlatRecord
 
@@ -46,27 +46,20 @@ class UploadResultView():
         # self.rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
         # todo сделать анализ строк листов на заголовки
         sheet_names = wb.sheet_names()
+        i = 0
         for sh in sheet_names:
-            sheet = Sheet(sh)
-            sheet.headlines = self.get_sheet_headlines(sh)
-            self.sheets.append(sheet)
+            i += 1
+            self.sheets.append((sh, self.get_sheet_lines(sh), i))
 
-    def get_sheet_headlines(self, sheet_name):
-        res = None
+    def get_sheet_lines(self, sheet_name):
+        res = []
         sheet = self.wb.get_sheet_by_name(sheet_name)
-        # определяем максимальное количество заполненых колонок
-        max_len = 0
-        cur_len = 0
         for i in range(sheet.nrows):
-            cur_row = sheet.row_values(i)  # получим текущую строку
-            for fld in cur_row:  # подсчитаем длинну ненулевых символов
-                if fld is not None and fld != '':
-                    cur_len += 1  # len(cur_row)  # длинна текущей строки(todo  - определяем не по длинне)
-            if cur_len > max_len:
-                max_len = cur_len  # если строка длинне текщей максимальной - обновляем
-                res = (i, cur_row)  # сохраняем текущую максимальную строку
-            cur_len = 0
+            res.append(sheet.row_values(i, 0, 25))
         return res
+
+
+
 
 
 

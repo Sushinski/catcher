@@ -3,28 +3,38 @@
 <head lang="ru">
     <meta charset="UTF-8">
     <title>Анализ загруженного файла</title>
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static "js/table_selects.js" %}"></script>
 </head>
 <body>
     <h1>Анализ загруженного файла</h1>
     <form action="parse_upload/" method="post">
         {% csrf_token %}
         {% for sh in view.sheets %}
-            <table border="1" title="{{ sh.name }}">
-                <tr>
-                {% for h in sh.headlines.1 %}
-                    <th>{{ h }}</th>
-                {% endfor %}
-                </tr>
-                <tr>
-                {% for h in sh.headlines.1 %}
-                    <td align="middle">
-                        <select name="sel_{{ h }}">
-                            <option value="related" selected>Прочие</option>
-                            {% for opt in view.sel_options %}
-                                <option value={{ opt }}>{{ opt }}</option>
-                            {% endfor %}
+            <h3>{{ sh.0 }}</h3>
+            <table border="1" title="{{ sh.0 }}">
+                {% for row in sh.1 %}
+                    <tr>
+                        <td allign="left">
+                        <select class="sr" name="{{ sh.2 }}" onchange="show_sel({{ sh.2 }}, this.options[this.selectedIndex].value);">
+                            <option value="none" selected> --- </option>
+                            <option value="header">Заголовок--></option>
+                            <option value="start_range">Начало диапазона--></option>
+                            <option value="end_range"><--Конец диапазона</option>
                         </select>
-                    </td>
+                        </td>
+                    {% for fld in row %}
+                        <td align="middle">
+                            <div>{{ fld }}</div>
+                            <select class="sl" name="sel_{{ sh.2 }}" style="display: none">
+                                <option value="related" selected>Прочие</option>
+                                {% for opt in view.sel_options %}
+                                    <option value={{ opt }}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    {% endfor %}
+                    </tr>
                 {% endfor %}
                 </tr>
             </table>
