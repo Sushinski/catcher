@@ -13,30 +13,30 @@
         {% for sh in view.sheets %}
             <h3>{{ sh.0 }}</h3>
             <table border="1" title="{{ sh.0 }}">
-                {% for row in sh.1 %}
+                {% for i, row in sh.1 %}
                     <tr>
                         <td allign="left">
-                        <select class="sr" name="{{ sh.2 }}" onchange="show_sel({{ sh.2 }}, this.options[this.selectedIndex].value);">
+                        <select class="sr" name="{{ sh.0 }}_{{ i }}" onchange="show_sel('{{ sh.0 }}', '{{ i }}', '{{ view.fields_num }}' ,this.options[this.selectedIndex].value);">
                             <option value="none" selected> --- </option>
                             <option value="header">Заголовок--></option>
                             <option value="start_range">Начало диапазона--></option>
                             <option value="end_range"><--Конец диапазона</option>
                         </select>
                         </td>
-                    {% for fld in row %}
+                        {% for j, fld in row %}
                         <td align="middle">
                             <div>{{ fld }}</div>
-                            <select class="sl" name="sel_{{ sh.2 }}" style="display: none">
-                                <option value="related" selected>Прочие</option>
+                            <select class="sl" name="sel_{{ sh.0 }}_{{ i }}_{{ j }}" style="display: none">
+                                <option value="Прочие" selected>Прочие</option>
                                 {% for opt in view.sel_options %}
-                                    <option value={{ opt }}>{{ opt }}</option>
+                                    <option value={{ opt.0 }}>{{ opt.1 }}</option>
                                 {% endfor %}
                             </select>
                         </td>
                     {% endfor %}
+
                     </tr>
                 {% endfor %}
-                </tr>
             </table>
             <br><br><br>
         {% endfor %}

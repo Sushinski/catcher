@@ -3,14 +3,13 @@
  */
 
 
-function show_sel(name, value){
-    var sels=document.getElementsByName("sel_" + name);
-    for( var i = 0; i < sels.length; i++){
+function show_sel(tbl_name, row_num, fields_num,  value){
+    for( var i =0; i < fields_num; i++){
+        var sels=document.getElementsByName("sel_" + tbl_name + '_' + row_num + '_' + i);
         if( value == "header"){
-            sels[i].style.display = "block"
+            sels[0].style.display = "block"
         }else{
-            sels[i].style.display = "none"
+            sels[0].style.display = "none"
         }
-
     }
 }

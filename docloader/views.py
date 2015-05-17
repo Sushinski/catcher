@@ -39,25 +39,21 @@ def handle_uploaded_file(f):
 class UploadResultView():
     def __init__(self, filename):
         self.sheets = []  # страницы, содержащие headlines - заголовки
-        self.sel_options = DOC_RU_FIELDS  # варианты целевых полей в базе
+        self.sel_options = zip(DOC_FIELDS, DOC_RU_FIELDS)  # варианты целевых полей в базе
         global wb
         wb = Workbook(filename)
         self.wb = wb
+        self.fields_num = 25
         # self.rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
         # todo сделать анализ строк листов на заголовки
         sheet_names = wb.sheet_names()
-        i = 0
         for sh in sheet_names:
-            i += 1
-            self.sheets.append((sh, self.get_sheet_lines(sh), i))
+            self.sheets.append((sh, self.get_sheet_lines(sh)))
 
     def get_sheet_lines(self, sheet_name):
-        res = []
         sheet = self.wb.get_sheet_by_name(sheet_name)
-        for i in range(sheet.nrows):
-            res.append(sheet.row_values(i, 0, 25))
+        res = [(i, enumerate(sheet.row_values(i, 0, 25))) for i in range(sheet.nrows)]
         return res
-
 
 
 
@@ -77,33 +73,44 @@ class ParseResultView():
     def __init__(self, request):
         global wb
         self.wb = wb
-        rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
-        for r in rows:
-            dest_row_range_str = request.POST['range%d' % r[0][0]]
-            dest_fields_str = request.POST['map%d' % r[0][0]]
-            if len(dest_row_range_str) and len(dest_fields_str):
-                dest_row_range_list = [tuple(elem.strip(' ').split('-')) for elem in dest_row_range_str.split(',')]
-                dest_fields_list = [fld.strip('()').replace('\n', ' ') for fld in dest_fields_str.split('),(')]
-                fld_index_dict = self.get_indexes_dict(r[0][0], dest_fields_list)
-                for x, y in dest_row_range_list:
-                    self.save_rows_to_db(r[0][0], int(x), int(y), fld_index_dict)
+        self.fields_fmt = None
+        self.fields_num = 25
+        for sh in wb.sheets:  # for every table
+            # 1st - get fields mapping
+            started = False
+            for i in range(sh.nrows):
+                row = sh.row_values(i, 0, self.fields_num)
+                row_1st_sel = request.POST[u'{0}_{1}'.format(sh.name, i)]
+                if row_1st_sel == 'header':
+                    self.get_field_fmt(request, sh.name, i, row)
+                elif row_1st_sel == 'start_range' and self.fields_fmt:
+                    self.save_rows_to_db(row, self.fields_fmt)
+                    started = True
+                elif row_1st_sel == 'end_range' and self.fields_fmt:
+                    self.save_rows_to_db(row, self.fields_fmt)
+                    started = False
+                elif self.fields_fmt and started:
+                    self.save_rows_to_db(row, self.fields_fmt)
 
-    def save_rows_to_db(self, sheet_no, row_from, row_to, fields):
-        print row_from, row_to
+    def get_field_fmt(self, request, sheet_name, row_num, row):
+        res = dict()
+        for i, fld in enumerate(row):
+            value = request.POST[u'sel_{0}_{1}_{2}'.format(sheet_name, row_num, i)]
+            res[value] = i
+        self.fields_fmt = res
+
+    def save_rows_to_db(self, row, fields):
         try:
-            sh = self.wb.get_sheet(sheet_no)
-            for i in range(row_from, row_to):
-                row = sh.row_values(i)
-                # company, created = \
-                #    CompanyRecord.objects.get_or_create(name=row[fields.get('company'])
-                spr = [j for j in range(len(row)) if j not in fields.values()]
-                rii = [unicode(row[k]) for k in spr if k != '']
-                related_info = ','.join(rii)
-                FlatRecord.objects.create(price=row[fields['price']],
-                                          district=row[fields['district']],
-                                          rooms=row[fields['rooms']],
-                                          area=row[fields['area']],
-                                          related_info=related_info)
+            # company, created = \
+            #    CompanyRecord.objects.get_or_create(name=row[fields.get('company'])
+            spr = [j for j in range(len(row)) if j not in fields.values()]
+            rii = [unicode(row[k]) for k in spr if k != '']
+            related_info = ','.join(rii)
+            FlatRecord.objects.create(price=row[fields['price']],
+                                      district=row[fields['district']],
+                                      rooms=row[fields['rooms']],
+                                      area=row[fields['area']],
+                                      related_info=related_info)
         except Exception as ex:
             print ex
 
