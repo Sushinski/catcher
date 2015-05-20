@@ -4,9 +4,14 @@ from docloader.fileloader import Workbook
 from catcher.settings import UPLOAD_DIR
 from models import CompanyRecord, FlatRecord
 
+
+# todo ввод компания, этажность дома, адрес, район, срок сдачи, форма договора,  название комплекса, виды рассрочки,
+# todo ипотека
 wb = None
-DOC_FIELDS = ('price', 'area', 'district', 'rooms')
-DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Район', u'Кол-во комнат')
+DOC_FIELDS = ('price', 'area', 'abs_area', 'district', 'rooms', 'floor', 'primary_fee', 'room_height',
+              'kitchen_area', 'balcony')
+DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Общ. площадь', u'Район', u'Комнат', u'Этаж', u'Первый взнос', u'Потолок',
+                 u'Пл. кухни', u'Балкон')
 DOC_FIELDS_DICT = dict(zip(DOC_RU_FIELDS, DOC_FIELDS))
 
 
@@ -113,24 +118,3 @@ class ParseResultView():
                                       related_info=related_info)
         except Exception as ex:
             print ex
-
-    def get_indexes_dict(self, sheet_no, field_names):
-        res = dict()
-        try:
-            sh = self.wb.get_sheet(sheet_no)
-            idx = 0
-            fld_nams_enum = [(key, value) for value, key in enumerate(field_names)]
-            fld_names_dict = dict(fld_nams_enum)
-            for i in range(sh.nrows):
-                vals = [unicode(elem).replace('\n', ' ') for elem in sh.row_values(i)]
-                for j, fld in enumerate(vals):
-                    if fld in field_names:
-                        index = fld_names_dict[fld]
-                        res[DOC_FIELDS[index]] = j
-                        idx += 1
-                        if idx == len(DOC_FIELDS):
-                            return res
-            return None
-        except Exception as ex:
-            print ex
-            return None

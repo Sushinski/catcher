@@ -6,10 +6,21 @@ class CompanyRecord(models.Model):
     name = models.TextField(verbose_name=u'Компания')
 
 
-class FlatRecord(models.Model):
-    price = models.DecimalField(verbose_name=u'Цена', max_digits=19, decimal_places=10)
-    district = models.TextField(verbose_name=u'Район', null=False)
-    rooms = models.IntegerField(verbose_name=u'Кол-во комнат', null=False)
-    area = models.FloatField(verbose_name=u'Площадь', null=False)
+class BuildingRecord(models.Model):
     company = models.ForeignKey(CompanyRecord, verbose_name=u'Компания', null=True)
-    related_info = models.TextField(verbose_name=u'Дополнительно', null=True)
+
+
+class BuildingFieldRecord(models.Model):
+    field = models.TextField(verbose_name=u'Название поля', null=False, unique=True)
+    value = models.TextField(verbose_name=u'Значение поля', null=True)
+    flat = models.ForeignKey(BuildingRecord, verbose_name=u'Дом', null=False)
+
+
+class FlatRecord(models.Model):
+    company = models.ForeignKey(BuildingRecord, verbose_name=u'Компания', null=True)
+
+
+class FlatFieldRecord(models.Model):
+    field = models.TextField(verbose_name=u'Название поля', null=False, unique=True)
+    value = models.TextField(verbose_name=u'Значение поля', null=True)
+    flat = models.ForeignKey(FlatRecord, verbose_name=u'Квартира', null=False)
