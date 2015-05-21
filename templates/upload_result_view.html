@@ -11,7 +11,14 @@
     <form action="parse_upload/" method="post">
         {% csrf_token %}
         {% for sh in view.sheets %}
+            <br>
             <h3>{{ sh.0 }}</h3>
+            <br>
+            {% for sfld in view.single_fields %}
+                <label for="{{ sfld.0 }}"> {{ sfld.1 }} </label>
+                <input align="right" type="text" name="{{ sfld.0 }}" id="{{ sfld.0 }}"/>
+                <br>
+            {% endfor %}
             <table border="1" title="{{ sh.0 }}">
                 {% for i, row in sh.1 %}
                     <tr>

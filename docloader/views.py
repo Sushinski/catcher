@@ -14,6 +14,10 @@ DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Общ. площадь', u'Р
                  u'Пл. кухни', u'Балкон')
 DOC_FIELDS_DICT = dict(zip(DOC_RU_FIELDS, DOC_FIELDS))
 
+DOC_INPUT_FIELDS = [(u'company', u'Компания'), (u'house_floors', u'Этажность дома'), (u'address', u'Адрес'),
+                    (u'district', u'Район'), (u'release_date', u'Срок сдачи'), (u'agreement_form', u'Форма договора'),
+                    (u'payment_form', u'Виды рассрочки'), (u'mortgage', u'Ипотека')]
+
 
 def upload_view(request):
     c = {'view': None, }
@@ -45,6 +49,7 @@ class UploadResultView():
     def __init__(self, filename):
         self.sheets = []  # страницы, содержащие headlines - заголовки
         self.sel_options = zip(DOC_FIELDS, DOC_RU_FIELDS)  # варианты целевых полей в базе
+        self.single_fields = DOC_INPUT_FIELDS
         global wb
         wb = Workbook(filename)
         self.wb = wb
@@ -55,14 +60,11 @@ class UploadResultView():
         for sh in sheet_names:
             self.sheets.append((sh, self.get_sheet_lines(sh)))
 
+
     def get_sheet_lines(self, sheet_name):
         sheet = self.wb.get_sheet_by_name(sheet_name)
         res = [(i, enumerate(sheet.row_values(i, 0, 25))) for i in range(sheet.nrows)]
         return res
-
-
-
-
 
 
 def parse_uploaded_file(request):
@@ -107,7 +109,7 @@ class ParseResultView():
     def save_rows_to_db(self, row, fields):
         try:
             # company, created = \
-            #    CompanyRecord.objects.get_or_create(name=row[fields.get('company'])
+            # CompanyRecord.objects.get_or_create(name=row[fields.get('company'])
             spr = [j for j in range(len(row)) if j not in fields.values()]
             rii = [unicode(row[k]) for k in spr if k != '']
             related_info = ','.join(rii)
