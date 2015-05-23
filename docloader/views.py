@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from docloader.fileloader import Workbook
 from catcher.settings import UPLOAD_DIR
-from models import CompanyRecord, FlatRecord
+from models import *
 
 
 # todo ввод компания, этажность дома, адрес, район, срок сдачи, форма договора,  название комплекса, виды рассрочки,
@@ -14,7 +14,7 @@ DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Общ. площадь', u'Р
                  u'Пл. кухни', u'Балкон')
 DOC_FIELDS_DICT = dict(zip(DOC_RU_FIELDS, DOC_FIELDS))
 
-DOC_INPUT_FIELDS = [(u'company', u'Компания'), (u'house_floors', u'Этажность дома'), (u'address', u'Адрес'),
+DOC_INPUT_FIELDS = [(u'building', u'Название объекта'), (u'house_floors', u'Этажность дома'), (u'address', u'Адрес'),
                     (u'district', u'Район'), (u'release_date', u'Срок сдачи'), (u'agreement_form', u'Форма договора'),
                     (u'payment_form', u'Виды рассрочки'), (u'mortgage', u'Ипотека')]
 
@@ -49,7 +49,8 @@ class UploadResultView():
     def __init__(self, filename):
         self.sheets = []  # страницы, содержащие headlines - заголовки
         self.sel_options = zip(DOC_FIELDS, DOC_RU_FIELDS)  # варианты целевых полей в базе
-        self.single_fields = DOC_INPUT_FIELDS
+        self.single_fields = [(u'company', u'Компания')]
+        self.single_fields.extend(DOC_INPUT_FIELDS)
         global wb
         wb = Workbook(filename)
         self.wb = wb
@@ -60,10 +61,9 @@ class UploadResultView():
         for sh in sheet_names:
             self.sheets.append((sh, self.get_sheet_lines(sh)))
 
-
     def get_sheet_lines(self, sheet_name):
         sheet = self.wb.get_sheet_by_name(sheet_name)
-        res = [(i, enumerate(sheet.row_values(i, 0, 25))) for i in range(sheet.nrows)]
+        res = [(i, enumerate(sheet.row_values(i, 0, self.fields_num))) for i in range(sheet.nrows)]
         return res
 
 
@@ -82,8 +82,12 @@ class ParseResultView():
         self.wb = wb
         self.fields_fmt = None
         self.fields_num = 25
+        self.company = None  # company in proccess
+        self.building = None  # building in proccess
         for sh in wb.sheets:  # for every table
-            # 1st - get fields mapping
+            # 1st - create or get building
+            self.save_company_building(request)
+            # 2st - save flat rows
             started = False
             for i in range(sh.nrows):
                 row = sh.row_values(i, 0, self.fields_num)
@@ -99,6 +103,15 @@ class ParseResultView():
                 elif self.fields_fmt and started:
                     self.save_rows_to_db(row, self.fields_fmt)
 
+    def save_company_building(self, request):
+        try:
+            self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST['company'].lower())
+            self.building, cr = BuildingRecord.objects.get_or_create(company=self.company)
+            for fld, fld_name in DOC_INPUT_FIELDS:
+                BuildingFieldRecord.objects.get_or_create(building=self.building, field=fld, value=request.POST[fld])
+        except Exception as ex:
+            print ex
+
     def get_field_fmt(self, request, sheet_name, row_num, row):
         res = dict()
         for i, fld in enumerate(row):
@@ -113,10 +126,12 @@ class ParseResultView():
             spr = [j for j in range(len(row)) if j not in fields.values()]
             rii = [unicode(row[k]) for k in spr if k != '']
             related_info = ','.join(rii)
-            FlatRecord.objects.create(price=row[fields['price']],
-                                      district=row[fields['district']],
-                                      rooms=row[fields['rooms']],
-                                      area=row[fields['area']],
-                                      related_info=related_info)
+            flat, crtd = FlatRecord.objects.get_or_create(building=self.building)  # todo ключевые значения для квартиры
+            for fld in DOC_FIELDS:
+                value_key = fields.get(fld, None)
+                value = row[value_key] if value_key else None
+                FlatFieldRecord.objects.create(flat=flat,
+                                               field=fld,
+                                               value=value)
         except Exception as ex:
             print ex

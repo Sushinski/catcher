@@ -106,23 +106,47 @@
       <primary-key columns="session_key"/>
       <index name="django_session_de54fa62" unique="true" columns="expire_date"/>
     </table>
+    <table name="docloader_buildingfieldrecord" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="field" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <column name="value" sqlType="TEXT" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="building_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+      <foreign-key name="#FAKE_docloader_buildingfieldrecord_1" columns="building_id" ref-table="docloader_buildingrecord" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <index name="docloader_buildingfieldrecord_4c63c6ae" unique="true" columns="building_id"/>
+    </table>
+    <table name="docloader_buildingrecord" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="name" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <column name="company_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+      <foreign-key name="#FAKE_docloader_buildingrecord_1" columns="company_id" ref-table="docloader_companyrecord" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <exported-key name="#FAKE_docloader_buildingfieldrecord_1" table="docloader_buildingfieldrecord" schema="" catalog="" columns="building_id"/>
+      <exported-key name="#FAKE_docloader_flatrecord_1" table="docloader_flatrecord" schema="" catalog="" columns="building_id"/>
+      <index name="docloader_buildingrecord_447d3092" unique="true" columns="company_id"/>
+    </table>
     <table name="docloader_companyrecord" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="name" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
-      <exported-key name="#FAKE_docloader_flatrecord_1" table="docloader_flatrecord" schema="" catalog="" columns="company_id"/>
+      <exported-key name="#FAKE_docloader_buildingrecord_1" table="docloader_buildingrecord" schema="" catalog="" columns="company_id"/>
+    </table>
+    <table name="docloader_flatfieldrecord" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="field" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <column name="value" sqlType="TEXT" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="flat_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+      <foreign-key name="#FAKE_docloader_flatfieldrecord_1" columns="flat_id" ref-table="docloader_flatrecord" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <index name="docloader_flatfieldrecord_c4ab8b2c" unique="true" columns="flat_id"/>
     </table>
     <table name="docloader_flatrecord" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
-      <column name="price" sqlType="DECIMAL" precision="2000000000" scale="10" nullable="false" jdbcType="6"/>
-      <column name="district" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
-      <column name="rooms" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
-      <column name="area" sqlType="REAL" precision="2000000000" scale="10" nullable="false" jdbcType="6"/>
-      <column name="related_info" sqlType="TEXT" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
-      <column name="company_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
+      <column name="building_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
       <primary-key columns="id"/>
-      <foreign-key name="#FAKE_docloader_flatrecord_1" columns="company_id" ref-table="docloader_companyrecord" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
-      <index name="docloader_flatrecord_447d3092" unique="true" columns="company_id"/>
+      <foreign-key name="#FAKE_docloader_flatrecord_1" columns="building_id" ref-table="docloader_buildingrecord" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <exported-key name="#FAKE_docloader_flatfieldrecord_1" table="docloader_flatfieldrecord" schema="" catalog="" columns="flat_id"/>
+      <index name="docloader_flatrecord_4c63c6ae" unique="true" columns="building_id"/>
     </table>
     <table name="sqlite_sequence" schema="" catalog="" type="TABLE">
       <column name="name" sqlType="" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
