@@ -86,7 +86,7 @@ class ParseResultView():
         self.building = None  # building in proccess
         for sh in wb.sheets:  # for every table
             # 1st - create or get building
-            self.save_company_building(request)
+            self.save_company_building(sh.name, request)
             # 2st - save flat rows
             started = False
             for i in range(sh.nrows):
@@ -95,43 +95,50 @@ class ParseResultView():
                 if row_1st_sel == 'header':
                     self.get_field_fmt(request, sh.name, i, row)
                 elif row_1st_sel == 'start_range' and self.fields_fmt:
-                    self.save_rows_to_db(row, self.fields_fmt)
+                    self.save_row_to_db(row, self.fields_fmt)
                     started = True
                 elif row_1st_sel == 'end_range' and self.fields_fmt:
-                    self.save_rows_to_db(row, self.fields_fmt)
+                    self.save_row_to_db(row, self.fields_fmt)
                     started = False
                 elif self.fields_fmt and started:
-                    self.save_rows_to_db(row, self.fields_fmt)
+                    self.save_row_to_db(row, self.fields_fmt)
 
-    def save_company_building(self, request):
+    def save_company_building(self, sheet_name, request):
         try:
-            self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST['company'].lower())
-            self.building, cr = BuildingRecord.objects.get_or_create(company=self.company)
+            self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST[sheet_name+'_company'].lower())
+            self.building, cr = BuildingRecord.objects.get_or_create(company=self.company,
+                                                                     name=request.POST[sheet_name+'_building'].lower())
             for fld, fld_name in DOC_INPUT_FIELDS:
-                BuildingFieldRecord.objects.get_or_create(building=self.building, field=fld, value=request.POST[fld])
+                BuildingFieldRecord.objects.get_or_create(building=self.building, field=fld,
+                                                          value=request.POST[sheet_name+'_'+fld])
         except Exception as ex:
             print ex
 
     def get_field_fmt(self, request, sheet_name, row_num, row):
         res = dict()
         for i, fld in enumerate(row):
-            value = request.POST[u'sel_{0}_{1}_{2}'.format(sheet_name, row_num, i)]
-            res[value] = i
+            value = request.POST[u'sel_{0}_{1}_{2}'.format(sheet_name, row_num, i)]  # save fields mapping
+            if value == "other":  # for not selected rows save field name
+                res[i] = fld
+            else:   # save mappings for selected
+                res[value] = i
         self.fields_fmt = res
 
-    def save_rows_to_db(self, row, fields):
+    def save_row_to_db(self, row, fields):
         try:
-            # company, created = \
-            # CompanyRecord.objects.get_or_create(name=row[fields.get('company'])
-            spr = [j for j in range(len(row)) if j not in fields.values()]
-            rii = [unicode(row[k]) for k in spr if k != '']
-            related_info = ','.join(rii)
-            flat, crtd = FlatRecord.objects.get_or_create(building=self.building)  # todo ключевые значения для квартиры
-            for fld in DOC_FIELDS:
+            flat = FlatRecord.objects.create(building=self.building)  # todo ключевые значения для квартиры
+            for fld in DOC_FIELDS:  # save mapped fields
                 value_key = fields.get(fld, None)
                 value = row[value_key] if value_key else None
                 FlatFieldRecord.objects.create(flat=flat,
                                                field=fld,
                                                value=value)
+            for i, fld in enumerate(row):  # save unmapped fields
+                value_key = fields.get(i, None)
+                if value_key:
+                    value = row[i]
+                    FlatFieldRecord.objects.create(flat=flat,
+                                                   field=value_key,
+                                                   value=value)
         except Exception as ex:
             print ex
