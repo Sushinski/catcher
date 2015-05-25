@@ -1,0 +1,10 @@
+{% extends 'repview_datatables/base_table.html' %}
+
+{% block page_title %}ДЦС и Дирекции ОАО "РЖД"{% endblock %}
+
+{% block xml_data_url %}'{% url 'directions_view_query' %}'{% endblock %}
+
+{% block table_title %}Результаты обучения в дирекциях хозяйства перевозок ОАО РЖД{% endblock %}
+
+{% block first_col_title %}Дирекция{% endblock %}
+{% block next_page_url %}{% url 'dt_direction_view' r.0 %}{% endblock %}

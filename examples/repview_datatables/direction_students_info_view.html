@@ -1,0 +1,34 @@
+{% extends 'repview_datatables/base_students_info.html' %}
+
+{% block page_title %}Дирекция: {{ view.dir_name }}{% endblock %}
+
+{% block nav_panel %}{% include 'repview_datatables/direction_nav_panel.html' %}{% endblock %}
+
+{% block table_title %}{{ view.table_title }} {{ view.dir_name }}{% endblock %}
+
+{% block aos_column_select %}{% endblock %}
+{% block rdc_column_select %}{% endblock %}
+{% block sdo_column_select %}{% endblock %}
+{% block date_column_select %}{% endblock %}
+
+{% block aos_column_header %}{% endblock %}
+{% block rdc_column_header %}{% endblock %}
+{% block sdo_column_header %}{% endblock %}
+{% block date_column_header %}{% endblock %}
+
+{% block aos_column_spacer %}{% endblock %}
+{% block rdc_column_spacer %}{% endblock %}
+{% block sdo_column_spacer %}{% endblock %}
+{% block date_column_spacer %}{% endblock %}
+
+{% block row_filling %}
+{% for r in view.rows %}
+    <tr class="students_results">
+        <td width="22%" height="20px" align="left">{{ r.0 }}</td>
+        <td width="18%">{{ r.1 }}</td>
+        <td width="18%">{{ r.2 }}</td>
+        <td width="18%">{{ r.3 }}</td>
+        <td width="16%">{{ r.4 }}</td>
+    </tr>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% if view %}
+<tr>
+    <td>
+        <table width="100%" cellpadding="2" cellspacing="2" class="nav_panel">
+            <tr>
+                <td width="20%">
+                    {% if view.cpo_id == "0" %}
+                        <a href="{% url 'dt_directions_view' %}">Вернуться к списку дирекций</a>
+                    {% else %}
+                        <a href="{% url 'dt_dcs_view' view.dcs_id %}">Вернутся к списку ЦПО</a>
+                    {% endif %}
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_cpo_active_students_view' view.cpo_id %}">Список активных пользователей</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_cpo_inactive_students_view' view.cpo_id %}">Список неактивных пользователей</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_cpo_all_students_view' view.cpo_id %}">Общий список пользователей</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'cpo_upload_view' view.cpo_id %}">Загрузить отчёт</a>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+{% endif %}

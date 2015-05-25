@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Доступные виды аналитических отчётов</title>
+</head>
+<body>
+    {% if messages %}
+        {% for message in messages %}
+            <p align="center" class="main_title"> {{ message }} </p>
+        {% endfor %}
+    {% endif %}
+    {% if view %}
+        {% for r in view.rows %}
+            <tr>
+                <a href="{% url 'dt_report_config' r.1 %}">{{ r.0 }}</a>
+            </tr>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

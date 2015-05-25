@@ -1,0 +1,78 @@
+{% extends 'repview_datatables/a_report_config.html' %}
+{% block criteries_title %}Критерии отчета "Средний балл по должности"{% endblock %}
+{% block config_content %}
+    <table width="100%" align="center" cellpadding="1" cellspacing="1" class="out_table" style="padding:10px;">
+        <tr >
+            <td style="border-bottom:1px dashed #cacfdc" width="30%" >
+                <div class="tekst-b">
+                    <br>
+                    Выбрать дирекцию:<br>
+                    <select id="dir_sel" class="dir_sel" size="1" name="direction">
+                        <option value="Все">ЦД</option>
+                        {% for s in view.selections %}
+                            <option value="{{ s.1 }}">{{ s.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                </div>
+            </td>
+            <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+        </tr>
+        <tr >
+            <td style="border-bottom:1px dashed #cacfdc" width="30%">
+                <div class="tekst-b">
+                <br>
+                Выбрать ДЦС:<br>
+                    <select id="dcs_sel" class="dcs_sel" size="1" name="dcs" disabled>
+                        <option value="Все">Все</option>
+                        {% for s in view.dcs_selections %}
+                            <option par_id="{{ s.2 }}" value="{{ s.1 }}">{{ s.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                </div>
+            </td>
+            <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+        </tr>
+        <tr >
+            <td style="border-bottom:1px dashed #cacfdc" width="30%">
+                <div class="tekst-b">
+                <br>
+                Выбрать ЦПО:<br>
+                    <select id="cpo_sel" class="cpo_sel" size="1" name="cpo" disabled>
+                        <option value="Все">Все</option>
+                        {% for s in view.cpo_selections %}
+                            <option par_id="{{ s.2 }}{{ s.3 }}" value="{{ s.1 }}">{{ s.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <br><br>
+            </td>
+            <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px dashed #cacfdc" width="50%">
+                <div class="tekst-b">
+                    <br>
+                    Выбрать группу специальностей:<br>
+                    {% load mptt_tags %}
+                    <ul class="ul-treefree ul-dropfree">
+                        {% recursetree view.nodes %}
+                                <li>
+                                    <input class="lcb" type="checkbox" name="boxes[]" value="{{ node.kod }}">
+                                    {{ node.spec_fullname }}
+                                    {% if not node.is_leaf_node %}
+                                        <ul style="display: none;">
+                                            {{ children }}
+                                        </ul>
+                                    {% endif %}
+                                </li>
+                        {% endrecursetree %}
+                    </ul>
+                    <br><br>
+                </div>
+            </td>
+            <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+        </tr>
+    </table>
+{% endblock %}

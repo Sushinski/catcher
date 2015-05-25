@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{% block page_title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <link href="{% static "css/border-radius.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/style1.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/text.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/tables_style.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "extras/ColVis/media/css/ColVis.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/jscal2.css" %}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="{% static "js/jscal2.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/lang/ru.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.dataTables.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/ul-drop.js" %}"></script>
+    <script type="text/javascript" src="{% static "extras/ColVis/media/js/ColVis.min.js" %}"></script>
+
+
+    {% if view %}
+        <title>{{ view.rep_name }}: Конфигурация</title>
+    {% endif %}
+</head>
+
+<body>
+    {% if messages %}
+        {% for message in messages %}
+            <p align="center" class="main_title"> {{ message }} </p>
+        {% endfor %}
+    {% endif %}
+    {% if view %}
+        <form action="{% url 'dt_report_result' view.rep_name %}" method="post"> {% csrf_token %}
+        <div class="page1">
+        <div class="shapka1"></div>
+        <table width="100%" border="0">
+        <tr>
+            <td>
+                <table width="100%" cellpadding="2" cellspacing="2" class="nav_panel">
+                    <tr >
+                        <td width="25%">
+                            <a href="/reports/directions/">Вернуться к списку дирекций</a>
+                        </td>
+                        <td width="25%">
+                            <a href="/reports/dcs/29/active/">Список активных пользователей</a>
+                        </td>
+                        <td width="25%">
+                            <a href="/reports/dcs/29/inactive/">Список неактивных пользователей</a>
+                        </td>
+                        <td width="25%">
+                            <a href="/reports/dcs/29/all/">Общий список пользователей</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td height="40">
+                <p align="center" class="main_title">{% block criteries_title %}{% endblock %}</p>
+            </td>
+        </tr></table>
+        {% block config_content %}{% endblock %}
+
+        <div class="repbtn2"><input type="submit" name="send" value="Показать"/></div>
+        <div class="hfooter1"></div></div>
+        <div class="bottomfon1"><div class="bottom1">НПО Желдоравтоматизация</div></div>
+    </form>
+    {% endif %}
+</body>
+</html>

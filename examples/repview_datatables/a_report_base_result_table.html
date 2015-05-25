@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{% block page_title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <link href="{% static "css/border-radius.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/style1.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/tables_style.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "extras/ColVis/media/css/ColVis.css" %}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="{% static "js/jscal2.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/lang/ru.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "js/jquery.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "js/jquery.dataTables.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "extras/ColVis/media/js/ColVis.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#datatable').dataTable({
+                "sDom": '<"toptools"C<f>>rti',
+                //"bStateSave": true,
+                "aaSorting":[[0,"asc"]],
+                "iDisplayLength" : -1,
+                "oColVis": {
+                    "aiExclude": [ 0 ],
+                    "buttonText": "Настроить столбцы",
+                    "bRestore": true,
+                    "sRestore": "Вернуть все",
+                    "fnLabel": function(index, title) {
+                        if (index > 4 && index < 13) {
+                            return "АОС - " + title;
+                        }
+                        else if (index > 12 ) {
+                            return "ИТ - " + title;
+                        }
+                        else {
+                            return title;
+                        }
+                    }
+                },
+                "oLanguage": {
+                    "oPaginate": {
+                        "sNext": "Далее",
+                        "sPrevious": "Назад"
+                    },
+                    "sInfo": "Всего: _TOTAL_",
+                    "sInfoEmpty": "Всего: 0",
+                    "sInfoFiltered": "(отфильтровано из _MAX_)",
+                    "sEmptyTable": "За указанный период времени, пользователи, соответствующие критериям выборки, отсутствуют.",
+                    "sZeroRecords": "Нет результатов",
+                    "sLengthMenu": "",
+                    "sSearch": "Поиск:"
+                }
+            });
+            var csrftoken = getCookie('csrftoken');
+        } );
+    </script>
+</head>
+<body>
+<div class="page1">
+    <div class="shapka1"></div>
+    {% if messages %}
+        {% for message in messages %}
+            <p align="center" class="main_title"> {{ message }} </p>
+        {% endfor %}
+        <p align="center"><a href="javascript: history.go(-1)">Вернуться назад</a></p>
+    {% else %}
+        <table width="100%" border="0">
+            {% block nav_panel %}{% endblock %}
+            {% if view %}
+                <tr>
+                    <td height="40">
+                        <p align="center" class="main_title">{% block table_title %}{% endblock %}</p>
+                    </td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>
+                    <table width="100%" align="center" cellpadding="1" cellspacing="1" class="out_table">
+                        <tr>
+                            <td>
+                                <form action="." method="POST"> {% csrf_token %}
+                                    {% block content_table %}{% endblock %}
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+    <div class="hfooter1"></div></div>
+<div class="bottomfon1">
+    <div class="bottom1">НПО ЖелДорАвтоматизация</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% if view %}
+<tr>
+    <td>
+        <table width="100%" cellpadding="2" cellspacing="2" class="nav_panel">
+            <tr>
+                <td width="20%">
+                    <a href="{% url 'dt_directions_view' %}">Вернуться к списку дирекций</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_direction_view' view.dir_id %}">Список ДЦС</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_direction_active_students_view' view.dir_id %}">Список активных пользователей</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_direction_inactive_students_view' view.dir_id %}">Список неактивных пользователей</a>
+                </td>
+                <td width="20%">
+                    <a href="{% url 'dt_direction_all_students_view' view.dir_id %}">Общий список пользователей</a>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+{% endif %}

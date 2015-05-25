@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/tables_style.css" %}"/>
+    <title>Загрузка отчёта</title>
+
+
+</head>
+<body>
+{% load l10n %}
+<p align="center" class="main_title"> Загрузка отчёта на сервер  </p>
+{% if messages %}
+    {% for message in messages %}
+        <p align="center" class="main_title"> {{ message }} </p>
+    {% endfor %}
+    <p align="center"><a href="javascript: history.go(-2)">Вернуться назад</a></p>
+{% else %}
+    {% localize on %}
+        <form action="." method="POST" enctype="multipart/form-data"> {% csrf_token %}
+            <p align="center"><input type="file" name="f">
+            <input type="submit" value="Отправить"></p>
+        </form>
+    {% endlocalize %}
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,10 @@
+{% extends 'repview_datatables/base_table.html' %}
+
+{% block page_title %}ДЦС: {{ view.dcs_name }} - {{ view.dir_name }}{% endblock %}
+
+{% block nav_panel %}{% include 'repview_datatables/dcs_nav_panel.html' %}{% endblock %}
+
+{% block table_title %}Результаты для центров практического обучения {{ view.dcs_name }}{% endblock %}
+
+{% block first_col_title %}ЦПО{% endblock %}
+{% block next_page_url %}{% url 'dt_cpo_active_students_view' r.0 %}{% endblock %}

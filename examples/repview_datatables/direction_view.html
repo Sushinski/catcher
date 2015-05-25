@@ -1,0 +1,10 @@
+{% extends 'repview_datatables/base_table.html' %}
+
+{% block page_title %}Дирекция: {{ view.dir_name }}{% endblock %}
+
+{% block nav_panel %}{% include 'repview_datatables/direction_nav_panel.html' %}{% endblock %}
+
+{% block table_title %}Результаты обучения в дирекции {{ view.dir_name }}{% endblock %}
+
+{% block first_col_title %}ДЦС{% endblock %}
+{% block next_page_url %}{% url 'dt_dcs_view' r.0 %}{% endblock %}

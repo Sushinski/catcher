@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{% block page_title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <style type="text/css" media="screen">
+        @import "{% static "extras/ColVis/media/css/ColVis.css" %}";
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static "css/tables_style.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "css/jscal2.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "css/border-radius.css" %}"/>
+    <script type="text/javascript" src="{% static "js/jscal2.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/lang/ru.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "js/jquery.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "js/jquery.dataTables.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "extras/ColVis/media/js/ColVis.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('table.display').dataTable({
+                "sDom": '<"toptools"l<"daterange">f>rtip',
+                "bStateSave": true,
+                "sPaginationType": "full_numbers",
+                "iDisplayLength": 20,
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Все"]],
+                "oLanguage": {
+                    "oPaginate": {
+                        "sNext": "Далее",
+                        "sPrevious": "Назад",
+                        "sFirst": "В начало",
+                        "sLast": "В конец"
+                    },
+                    "sInfo": "Всего: _TOTAL_",
+                    "sInfoEmpty": "Всего: 0",
+                    "sInfoFiltered": "(отфильтровано из _MAX_)",
+                    "sEmptyTable": "За указанный период времени, пользователи, соответствующие критериям выборки, отсутствуют.",
+                    "sZeroRecords": "Нет результатов",
+                    "sLengthMenu": "Показать _MENU_ записей",
+                    "sSearch": "Поиск:"
+                }
+            });
+            $('div.daterange').html('Установить диапазон выборки по времени с' +
+                    ' <input style="border: 0px; text-align: center" readonly  border="0" name="start" type="text" id="show_d" size="7" value="<...>"/>' +
+                    ' по' +
+                    ' <input style="border: 0px; text-align: center" readonly border="0" name="end" type="text" id="show_c" size="7" value="<...>"/>' +
+                    ' <input name="refresh" type="submit" value="Обновить"/>');
+            Calendar.setup({
+                trigger    : "show_d",
+                inputField : "show_d",
+                min: 20050101,
+                dateFormat : "%d.%m.%Y",
+                onSelect   : function() {
+                    this.hide()
+                }
+            });
+            Calendar.setup({
+                trigger    : "show_c",
+                inputField : "show_c",
+                <!-- selection  : Calendar.dateToInt(new Date()), -->
+                min: 20050101,
+                dateFormat : "%d.%m.%Y",
+                <!-- date: 20000101, -->
+                onSelect   : function() {
+                    this.hide()
+                }
+            });
+            var csrftoken = getCookie('csrftoken');
+        } );
+    </script>
+</head>
+<body>
+{% if messages %}
+    {% if view %}
+        {% for message in messages %}
+            <p align="center" class="main_title"> {{ message }} </p>
+        {% endfor %}
+        <p align="center"><a href="javascript: history.go(-1)">Вернуться назад</a></p>
+    {% endif %}
+{% else %}
+    <table width="100%" border="0">
+        {% block nav_panel %}{% endblock %}
+        {% if view %}
+            <tr>
+                <td height="40">
+                    <p align="center" class="main_title">{% block table_title %}{% endblock %}</p>
+                </td>
+            </tr>
+            <tr>
+                <td height="50">
+                    <p align="left" class="sub_title">{% block sub_title %}{% endblock %}</p>
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td>
+                <table width="100%" align="center" cellpadding="1" cellspacing="1" class="out_table">
+                    <tr>
+                        <td>
+                            <form action="." method="POST"> {% csrf_token %}
+                                <table title="АОС/СДО" width="100%" border="0" cellpadding="2" cellspacing="2" class="display" id="datatable">
+                                    <thead>
+                                    <tr class="span_header1">
+                                        <th colspan="3">АОС</th>
+                                        <th colspan="3">СДО</th>
+                                    </tr>
+                                    <tr class="span_header2">
+                                        <th width="7%">Дата</th>
+                                        <th width="25%">Наименование билета</th>
+                                        <th width="7%">Оценка/Рейтинг</th>
+                                        <th width="7%">Дата</th>
+                                        <th width="25%">Название курса</th>
+                                        <th width="7%">Процент прохождения</th>
+                                    </tr>
+                                    </thead>
+                                    {% if view %}
+                                        <tbody>
+                                        {% for r in view.rows %}
+                                            <tr class="results">
+                                                <td align="left">{{ r.0.hour|stringformat:"02d" }}:{{ r.0.minute|stringformat:"02d" }}:{{ r.0.second|stringformat:"02d" }} {{ r.0.day|stringformat:"02d" }}.{{ r.0.month|stringformat:"02d" }}.{{ r.0.year|stringformat:"02d" }}</td> <!-- дата -->
+                                                <td align="center">{{ r.1|default_if_none:"---" }}</td> <!-- наим. билета -->
+                                                <td align="center">{{ r.2|default_if_none:"-" }}/{{ r.3|default_if_none:"-" }}</td> <!-- оценка-рейтинг -->
+                                                <td align="left">{{ r.15.hour|stringformat:"02d" }}:{{ r.15.minute|stringformat:"02d" }}:{{ r.15.second|stringformat:"02d" }} {{ r.15.day|stringformat:"02d" }}.{{ r.15.month|stringformat:"02d" }}.{{ r.15.year|stringformat:"02d" }}</td> <!-- дата -->
+                                                <td align="center">{{ r.16|default_if_none:"---" }}</td> <!-- наим. билета -->
+                                                <td align="center">{{ r.17|default_if_none:"-" }}</td> <!-- оценка-рейтинг -->
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                {% endif %}
+                            </table>
+                            <br><br><br>
+                            <table width="100%" border="0" cellpadding="2" cellspacing="2" class="display" id="datatable">
+                                <thead>
+                                    <tr class="span_header1">
+                                        <th width="10%" rowspan="2">Дата</th>
+                                        <th width="15%" rowspan="2">Название полигона</th>
+                                        <th width="10%" rowspan="2">Урок</th>
+                                        <th width="10%" rowspan="2">Роль</th>
+                                        <th width="15%" rowspan="2">Продолжительность игры</th>
+                                        <th width="10%" rowspan="2">Критические события</th>
+                                        <th width="30%" colspan="3" align="center">Показатели работы<br>(пассажирский/грузовой)</th>
+                                    </tr>
+                                    <tr class="span_header2">
+                                        <th width="10%">Участковая<br>скорость</th>
+                                        <th width="10%">Техническая<br>скорость</th>
+                                        <th width="10%">Коэффициент<br>скорости</th>
+                                    </tr>
+                                </thead>
+                                    {% if view %}
+                                        <tbody>
+                                        {% for r in view.rows %}
+                                            <tr class="results">
+                                                <td align="left">{{ r.0.hour|stringformat:"02d" }}:{{ r.0.minute|stringformat:"02d" }}:{{ r.0.second|stringformat:"02d" }} {{ r.0.day|stringformat:"02d" }}.{{ r.0.month|stringformat:"02d" }}.{{ r.0.year|stringformat:"02d" }}</td> <!-- дата -->
+                                                <td align="center">{{ r.4|default_if_none:"---" }}</td> <!-- наим полигона -->
+                                                <td align="center">{{ r.5|default_if_none:"---" }}</td><!-- урок -->
+                                                <td align="center">{{ r.6|default_if_none:"---" }}</td><!-- роль -->
+                                                <td align="center">{%  if r.4  %} {{ r.7|default_if_none:"---" }}{% else %} {{"---"}} {% endif %}</td><!-- продолжительность -->
+                                                <td align="center">{{ r.8|default_if_none:"-" }}</td><!--   кол-во крит ситуаций -->
+                                                <td align="center">{{ r.9|default_if_none:"-" }}/{{ r.12|default_if_none:"-" }} </td><!--   участковая скорость -->
+                                                <td align="center">{{ r.10|default_if_none:"-" }}/{{ r.13|default_if_none:"-" }} </td><!--  техническая скорость -->
+                                                <td align="center">{{ r.11|default_if_none:"-" }}/{{ r.14|default_if_none:"-" }} </td><!--   коэффициент -->
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    {% endif %}
+                            </table>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+{% endif %}
+</body>
+</html>

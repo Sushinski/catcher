@@ -1,0 +1,5 @@
+{% extends 'repview_datatables/base_table.html' %}
+{% block page_title %}Дирекции ОАО "РЖД"{% endblock %}
+{% block table_title %}Результаты обучения в Центральной дирекции управления движением - филиале ОАО "РЖД"{% endblock %}
+{% block first_col_title %}Дирекция{% endblock %}
+{% block next_page_url %}{% url 'dt_direction_view' r.1 %}{% endblock %}

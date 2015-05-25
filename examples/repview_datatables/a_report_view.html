@@ -1,0 +1,88 @@
+{% extends 'repview_datatables/a_report_base_result_table.html' %}
+{% block page_title %}Аналитический отчёт по дирекции{% endblock %}
+{% block nav_panel %}{% include 'repview_datatables/a_report_nav_panel.html' %}{% endblock %}
+{% if view %}
+    {% block content_table %}
+        <table width="100%" border="0" cellpadding="2" cellspacing="2" class="display" id="datatable">
+            <thead>
+            <tr class="span_header1">
+                <th width="1%" rowspan="3">№</th>
+                <th width="10%" rowspan="3">{% block first_col_title %}{% endblock %}</th>
+                {% block second_col %}{% endblock %}
+                <th colspan="3">Пользователи</th>
+                <th colspan="7">АОС</th>
+                <th colspan="3">ИТ</th>
+            </tr>
+            <tr class="span_header2">
+                <th width="6%" rowspan="2">Всего по списку</th>
+                <th width="6%" rowspan="2">Не проходило обучение</th>
+                <th width="6%" rowspan="2">Процент посещения</th>
+                <th width="6%" rowspan="2">Не проходило обучение в АОС</th>
+
+                <th rowspan="2" width="6%">Не аттестовано</th>
+                <th colspan="4">Аттестовано</th>
+                <th width="6%" rowspan="2">Средний балл</th>
+                <th width="6%" rowspan="2">Всего по списку</th>
+                <th width="6%" rowspan="2">Не проходило обучение в ИТ</th>
+                <th width="6%" rowspan="2">Проходило обучение в ИТ</th>
+            </tr>
+            <tr class="span_header3">
+                <th width="5%">всего</th>
+                <th width="5%">3-4</th>
+                <th width="5%">4-5</th>
+                <th width="5%">5</th>
+            </tr>
+            </thead>
+            {% if view %}
+                <tbody>
+                    {% for r in view.rows %}
+                        <tr class="results">
+                            <td>{{ r.15 }}</td>
+                            <td>{{ r.0 }}</td>
+                            {% block second_col_row %}{% endblock %}
+                            <td>{{ r.2 }}</td>
+                            <td>{{ r.3 }}</td>
+                            <td>{{ r.4|floatformat:-1 }}</td>
+                            <td>{{ r.5 }}</td>
+                            <td>{{ r.6 }}</td>
+                            <td>{{ r.7 }}</td>
+                            <td>{{ r.8 }}</td>
+                            <td>{{ r.9 }}</td>
+                            <td>{{ r.10 }}</td>
+                            <td>{{ r.11|floatformat:-2 }}</td>
+                            <td>{{ r.12 }}</td>
+                            <td>{{ r.13 }}</td>
+                            <td>{{ r.14 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="span_header1">
+                        <th width="10%">Итого:</th>
+                        <th width="6%"></th>
+                        <th width="6%"></th>
+                        <th width="6%">{{ view.total_count_summ }}</th>
+                        <th width="6%">{{ view.total_inactive_count_summ }}</th>
+                        <th width="6%">{{ view.percentage_summ|floatformat:-1 }}</th>
+                        <th width="6%">{{ view.aos_inactive_summ }}</th>
+                        <th width="6%">{{ view.no_attest_summ }}</th>
+                        <th width="5%">{{ view.attest_count_summ }}</th>
+                        <th width="5%">{{ view.less_four_count_summ }}</th>
+                        <th width="5%">{{ view.less_five_count_summ }}</th>
+                        <th width="5%">{{ view.five_count_summ }}</th>
+                        <th width="6%">{{ view.total_avg_avg|floatformat:-2 }}</th>
+                        <th width="6%">{{ view.rdc_all_summ }}</th>
+                        <th width="6%">{{ view.rdc_inactive_summ }}</th>
+                        <th width="6%">{{ view.rdc_active_summ }}</th>
+
+                    </tr>
+                </tfoot>
+            {% endif %}
+        </table>
+    {% endblock %}
+    {% block table_title %}Аналитический отчёт по дирекции: {{ view.rep_title }}<br>За период: {{ view.time_spread_str }}
+        <br>Группы пользователей: {{ view.users_groups_str }}{% endblock %}
+    {% block first_col_title %}ЦПО{% endblock %}
+    {% block second_col %}<th width="10%" rowspan="3">ДЦС</th>{% endblock %}
+    {% block second_col_row %}<td>{{ r.1 }}</td>{% endblock %}
+{%  endif %}

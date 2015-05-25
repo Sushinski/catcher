@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{% block page_title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <style type="text/css" media="screen">
+        @import "{% static "extras/ColVis/media/css/ColVis.css" %}";
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static "css/tables_style.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "css/jscal2.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "css/border-radius.css" %}"/>
+    <script type="text/javascript" src="{% static "js/jscal2.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/lang/ru.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "js/jquery.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "js/jquery.dataTables.js" %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static "extras/ColVis/media/js/ColVis.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#datatable').dataTable({
+                "sDom": '<"toptools"C<"daterange">f>rtip',
+                {#                    "sDom": 'C<"clear">lfrtip',#}
+                "bStateSave": true,
+                "oColVis": {
+                    "aiExclude": [ 0 ],
+                    "buttonText": "Настроить столбцы",
+                    "bRestore": true,
+                    "sRestore": "Вернуть все",
+                    "fnLabel": function(index, title) {
+                            return title;
+                    }
+                },
+                "oLanguage": {
+                    "oPaginate": {
+                        "sNext": "Далее",
+                        "sPrevious": "Назад"
+                    },
+                    "sInfo": "Всего: _TOTAL_",
+                    "sInfoEmpty": "Всего: 0",
+                    "sInfoFiltered": "(отфильтровано из _MAX_)",
+                    "sEmptyTable": "За указанный период времени, пользователи, соответствующие критериям выборки, отсутствуют.",
+                    "sZeroRecords": "Нет результатов",
+                    "sLengthMenu": "",
+                    "sSearch": "Поиск:"
+                }
+            });
+            $('div.daterange').html('Установить диапазон выборки по времени с' +
+                    ' <input name="start" type="text" id="show_d" size="7" value="{{ view.start_date_str }}"/>' +
+                    ' по' +
+                    ' <input name="end" type="text" id="show_c" size="7" value="{{ view.end_date_str }}"/>' +
+                    ' <input name="refresh" type="submit" value="Обновить"/>');
+            Calendar.setup({
+                trigger    : "show_d",
+                inputField : "show_d",
+                min: 20050101,
+                dateFormat : "%d.%m.%Y",
+                onSelect   : function() {
+                    this.hide()
+                }
+            });
+            Calendar.setup({
+                trigger    : "show_c",
+                inputField : "show_c",
+                <!-- selection  : Calendar.dateToInt(new Date()), -->
+                min: 20050101,
+                dateFormat : "%d.%m.%Y",
+                <!-- date: 20000101, -->
+                onSelect   : function() {
+                    this.hide()
+                }
+            });
+            var csrftoken = getCookie('csrftoken');
+        } );
+    </script>
+</head>
+<body>
+{% if messages %}
+    {% for message in messages %}
+        <p align="center" class="main_title"> {{ message }} </p>
+    {% endfor %}
+    <p align="center"><a href="javascript: history.go(-1)">Вернуться назад</a></p>
+{% else %}
+    <table width="100%" border="0">
+        {% block nav_panel %}{% endblock %}
+        {% if view %}
+            <tr>
+                <td height="40">
+                    <p align="center" class="main_title">{% block table_title %}{% endblock %}</p>
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td>
+                <table width="100%" align="center" cellpadding="1" cellspacing="1" class="out_table">
+                    <tr>
+                        <td>
+                            <form action="." method="POST"> {% csrf_token %}
+                                <table width="100%" border="0" cellpadding="2" cellspacing="2" class="display" id="datatable">
+                                    <thead>
+                                    <tr class="span_header1">
+                                        <th width="30%"> ДЦС, Дирекция</th>
+                                        <th width="30%">Проходило ( >15 мин )</th>
+                                        <th width="30%">Не проходило ( <15 мин )</th>
+                                    </tr>
+                                    </thead>
+                                    {% if view %}
+                                        <tbody>
+                                        {% for r in view.rows_gt %}
+                                            <tr class="results">
+                                                <td align="center">{{ r.0 }} / {{ r.1 }} </td>
+                                                <td><a href="{% url 'dt_active_view' r.5 %}"> {{ r.2 }} {{ r.3 }} {{ r.4 }}</a></td>
+                                                <td>{{ "---" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        {% for r in view.rows_lt %}
+                                            <tr class="results">
+                                                <td align="center">{{ r.0 }} / {{ r.1 }} </td>
+                                                <td>{{ "---" }}</td>
+                                                <td><a href="{% url 'dt_active_view' r.5 %}">{{ r.2 }} {{ r.3 }} {{ r.4 }}</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    {% endif %}
+                                </table>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+{% endif %}
+</body>
+</html>

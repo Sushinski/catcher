@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="-1" />
+        <title>{% block page_title %}{% endblock %}</title>
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/style1.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "extras/ColVis/media/css/ColVis.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "css/tables_style.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "css/jscal2.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "css/border-radius.css" %}"/>
+        <script type="text/javascript" src="{% static "js/jscal2.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/lang/ru.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/jquery.js" %}"></script>
+		<script type="text/javascript" src="{% static "js/jquery.dataTables.js" %}"></script>
+        <script type="text/javascript" src="{% static "extras/ColVis/media/js/ColVis.min.js" %}"></script>
+		<script type="text/javascript" charset="utf-8">
+            $(document).ready(function() {
+                $('#datatable').dataTable({
+                    "sDom": '<"toptools"C<"repbtn"><"daterange">>f<"selectprofs">rtip',
+                    //"bStateSave": true,
+                    "aaSorting":[[0,"asc"]],
+                    "iDisplayLength" : 75,
+                    "oColVis": {
+                        "aiExclude": [ 0 ],
+                        "buttonText": "Настроить столбцы",
+                        "bRestore": true,
+                        "sRestore": "Вернуть все",
+                        "fnLabel": function(index, title) {
+                                        if (index > 4 && index < 10) {
+                                            return "АОС - " + title;
+                                        }
+                                        else if (index > 9 && index < 13) {
+                                            return "ИТ - " + title;
+                                        }
+                                        else if (index > 12 && index < 17) {
+                                            return "СДО - " + title;
+                                        }
+                                        else {
+                                            return title;
+                                        }
+                                   }
+                    },
+                    "oLanguage": {
+                        "oPaginate": {
+                            "sNext": "Далее",
+                            "sPrevious": "Назад"
+                        },
+                        "sInfo": "Всего: _TOTAL_",
+                        "sInfoEmpty": "Всего: 0",
+                        "sInfoFiltered": "(отфильтровано из _MAX_)",
+                        "sEmptyTable": "За указанный период времени, пользователи, соответствующие критериям выборки, отсутствуют.",
+                        "sZeroRecords": "Нет результатов",
+                        "sLengthMenu": "",
+                        "sSearch": "Поиск:"
+                    }
+                  });
+                $('div.repbtn').html('<a href="{% url 'dt_report_selection' %}">Аналитический отчёт</a>');
+
+                $('div.selectprofs').html(
+                        '<select size="1" name="spec_group">'+
+                        ' {% for s in view.select_profs %} ' +
+                        '<option value="{{ s }}" {% if s == view.selected %}selected{% endif %}>{{ s }}</option>' +
+                        '{% endfor %}' +
+                        '</select>' +
+                        '<input type="submit" name="send" value="Обновить"/>');
+                $('div.daterange').html('Установить диапазон выборки по времени с' +
+                        ' <input style="border: 0px; text-align: center" readonly  border="0" name="start" type="text" id="show_d" size="7" value="<...>"/>' +
+                        ' по' +
+                        ' <input style="border: 0px; text-align: center" readonly border="0" name="end" type="text" id="show_c" size="7" value="<...>"/>' +
+                        ' <input name="refresh" type="submit" value="Обновить"/>');
+                Calendar.setup({
+                    trigger    : "show_d",
+                    inputField : "show_d",
+                    min: 20000101,
+                    dateFormat : "%d.%m.%Y",
+                    onSelect   : function() {
+                        this.hide()
+                    }
+                });
+                Calendar.setup({
+                    trigger    : "show_c",
+                    inputField : "show_c",
+                    <!-- selection  : Calendar.dateToInt(new Date()), -->
+                    min: 20000101,
+                    dateFormat : "%d.%m.%Y",
+                    <!-- date: 20000101, -->
+                    onSelect   : function() {
+                        this.hide()
+                    }
+                });
+            var csrftoken = getCookie('csrftoken');
+            } );
+        </script>
+    </head>
+    <body>
+	<div class="page1">
+	<div class="shapka1"></div>
+        {% if messages %}
+        {% for message in messages %}
+        <p align="center" class="main_title"> {{ message }} </p>
+        {% endfor %}
+        <p align="center"><a href="javascript: history.go(-1)">Вернуться назад</a></p>
+        {% else %}
+        <table width="100%" border="0">
+            {% block nav_panel %}{% endblock %}
+            {% if view %}
+            <tr>
+                <td height="40">
+                    <p align="center" class="main_title">
+                        {% block table_title %}
+                        {% endblock %}
+                        <br>
+                        {% if  view.start_date_str != '' %}
+                            c {{ view.start_date_str }} по {{ view.end_date_str }}
+                        {% endif %}
+                    </p>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>
+                    <table width="100%" align="center" cellpadding="1" cellspacing="1" class="out_table">
+                        <tr>
+                            <td>
+                                <form action="." method="POST"> {% csrf_token %}
+                                <table width="100%" border="0" cellpadding="2" cellspacing="2" class="display" id="datatable">
+                                    <thead>
+                                        <tr class="span_header1">
+                                            <th  rowspan="2">№</th>
+                                            <th rowspan="2">{% block first_col_title %}{% endblock %}</th>
+                                            <th colspan="3">Пользователи</th>
+                                            <th colspan="5">АОС-Д</th>
+                                            <th colspan="3">ИТ ДСП/ДНЦ</th>
+                                            <th colspan="4">СДО</th>
+                                        </tr>
+                                        <tr class="span_header2">
+                                            <th>Всего</th>
+                                            <th>Не проходило обучение</th>
+                                            <th>Процент посещения</th>
+
+                                            <th>Всего в АОС</th>
+                                            <th>Не проходило обучение в АОС</th>
+                                            <th>Не аттестовано (<3,66)</th>
+                                            <th>Аттестовано (>3,66)</th>
+                                            <th>Средний балл</th>
+
+                                            <th>Всего в ИТ</th>
+                                            <th>Не проходило обучение в ИТ</th>
+                                            <th>Проходило обучение в ИТ</th>
+
+                                            <th>Всего в СДО</th>
+                                            <th>Не проходило обучение в СДО</th>
+                                            <th>Не аттестовано</th>
+                                            <th>Аттестовано</th>
+                                        </tr>
+                                        </thead>
+                                        {% if view %}
+                                        <tbody>
+                                            {% for r in view.rows %}
+                                                <tr class="results">
+                                                    <td>{{ r.0 }}</td>
+                                                    <td align="center">
+                                                        <a href="{% block next_page_url %}{% endblock %}">{{ r.2 }}</a>
+                                                    </td>
+                                                    <td>{{ r.3 }}</td>
+                                                    <td>{{ r.4 }}</td>
+                                                    <td>{{ r.5|floatformat:-1 }}</td>
+                                                    <td>{{ r.6 }}</td>
+                                                    <td>{{ r.7 }}</td>
+                                                    <td>{{ r.8 }}</td>
+                                                    <td>{{ r.9 }}</td>
+                                                    <td>{{ r.10|floatformat:-2 }}</td>
+                                                    <td>{{ r.11 }}</td>
+                                                    <td>{{ r.12 }}</td>
+                                                    <td>{{ r.13 }}</td>
+                                                    <td>{{ r.14 }}</td>
+                                                    <td>{{ r.15 }}</td>
+                                                    <td>{{ r.16 }}</td>
+                                                    <td>{{ r.17 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="span_header1">
+                                                <th width="4%">Итого:</th>
+                                                <th width="6%"></th>
+                                                <th width="6%">{{ view.total_count_summ }}</th>
+                                                <th width="6%">{{ view.total_inactive_count_summ }}</th>
+                                                <th width="6%">{{ view.percentage_summ|floatformat:-1 }}</th>
+                                                <th width="6%">{{ view.aos_total_summ }}</th>
+                                                <th width="6%">{{ view.aos_inactive_summ }}</th>
+                                                <th width="6%">{{ view.no_attest_summ }}</th>
+                                                <th width="5%">{{ view.attest_count_summ }}</th>
+                                                <th width="6%">{{ view.total_avg_avg|floatformat:-2 }}</th>
+                                                <th width="6%">{{ view.rdc_all_summ }}</th>
+                                                <th width="6%">{{ view.rdc_inactive_summ }}</th>
+                                                <th width="6%">{{ view.rdc_active_summ }}</th>
+                                                <th width="6%">{{ view.sdo_all_summ }}</th>
+                                                <th width="6%">{{ view.sdo_inactive_summ }}</th>
+                                                <th width="6%">{{ view.sdo_attest_summ }}</th>
+                                                <th width="6%">{{ view.sdo_no_attest_summ }}</th>
+                                            </tr>
+                                        </tfoot>
+                                        {% endif %}
+                                    </table>
+                                 </form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        {% endif %}	
+	<div class="hfooter1"></div></div>
+	<div class="bottomfon1">
+        <div class="bottom1">НПО ЖелДорАвтоматизация</div>
+    </div>
+    </body>
+</html>

@@ -1,0 +1,33 @@
+{% extends 'repview_datatables/a_report_base_result_table.html' %}
+{% block page_title %}Средний балл по должности{% endblock %}
+{% block nav_panel %}{% include 'repview_datatables/a_report_nav_panel.html' %}{% endblock %}
+{% if view %}
+    {% block content_table %}
+        <table width="100%" border="0" cellpadding="2" cellspacing="2" class="display" id="datatable">
+            <thead>
+            <tr class="span_header1">
+                <th width="5%">№</th>
+                <th width="40%">Должность</th>
+                <th width="20%">Количество обучающихся</th>
+                <th width="20%">Средний балл АОС</th>
+            </tr>
+            </thead>
+            {% if view %}
+                <tbody>
+                    {% for r in view.rows %}
+                        <tr class="results">
+                            <td align="center">{{ r.0 }}</td>
+                            <td align="left">{{ r.1 }}</td>
+                            <td align="center">{{ r.2 }}</td>
+                            <td align="center">{{ r.3|floatformat:-2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                </tfoot>
+            {% endif %}
+        </table>
+    {% endblock %}
+    {% block table_title %}Средний балл по должности, дирекция: {{ view.dir }}<br>ДЦС: {{ view.dcs }}
+        <br>ЦПО: {{ view.cpo }}{% endblock %}
+{%  endif %}

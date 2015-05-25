@@ -1,0 +1,73 @@
+{% extends 'repview_datatables/a_report_config.html' %}
+{% block criteries_title %}Критерии отчета по дирекциям{% endblock %}
+{% block config_content %}
+<table width="100%" align="center" cellpadding="1" cellspacing="1" class="out_table" style="padding:10px;">
+    <tr >
+        <td style="border-bottom:1px dashed #cacfdc" width="30%" >
+            <div class="tekst-b">
+                <br>
+                Выбрать дирекцию:<br>
+                <select size="1" name="direction">
+                    {% for s in view.selections %}
+                        <option value="{{ s.0 }},{{ s.1}}">{{ s.1 }}</option>
+                    {% endfor %}
+                </select>
+
+                <br><br>
+            </div>
+        </td>
+        <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+    </tr>
+    <tr >
+        <td style="border-bottom:1px dashed #cacfdc" width="30%">
+            <div class="tekst-b">
+                <br>
+                <nobr>
+                    <label for="show_d">Установить диапазон выборки по времени с</label>
+                    <input name="start" type="text" id="show_d" size="7" value="{{ view.start_date_str }}"/>
+                    <label for="show_c"> по </label>
+                    <input name="end" type="text" id="show_c" size="7" value="{{ view.end_date_str }}"/>
+                </nobr>
+                <br><br>
+                <script type="text/javascript" charset="utf-8">
+                    Calendar.setup({
+                        trigger    : "show_d",
+                        inputField : "show_d",
+                        min: 20000101,
+                        dateFormat : "%d.%m.%Y",
+                        onSelect   : function() {
+                            this.hide()
+                        }
+                    });
+                    Calendar.setup({
+                        trigger    : "show_c",
+                        inputField : "show_c",
+                        <!-- selection  : Calendar.dateToInt(new Date()), -->
+                        min: 20000101,
+                        dateFormat : "%d.%m.%Y",
+                        <!-- date: 20000101, -->
+                        onSelect   : function() {
+                            this.hide()
+                        }
+                    });
+                    var csrftoken = getCookie('csrftoken');
+                </script>
+            </div>
+        </td>
+        <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+    </tr>
+    <tr>
+        <td style="border-bottom:1px dashed #cacfdc" width="30%">
+            <div class="tekst-b">
+                <br>
+                Выбрать группу специальностей:<br>
+                {% for c in view.check_boxes %}
+                    <input type="checkbox" name="boxes[]" value="{{ c }}">{{ c }}<br>
+                {% endfor %}
+                <br>
+            </div>
+        </td>
+        <td style="border-bottom:1px dashed #cacfdc">&nbsp;</td>
+    </tr>
+</table>
+{% endblock %}
