@@ -3,13 +3,32 @@ from django.db import models
 
 
 class CompanyRecord(models.Model):
-    name = models.TextField(verbose_name=u'Компания')
+    name = models.TextField(verbose_name=u'Компания', unique=True, null=False)
+
+
+class BuildingRecord(models.Model):
+    name = models.TextField(verbose_name=u'Объект', unique=True)
+    company = models.ForeignKey(CompanyRecord, verbose_name=u'Компания')
+
+
+class BuildingFieldRecord(models.Model):
+    field = models.TextField(verbose_name=u'Название поля', null=False)
+    value = models.TextField(verbose_name=u'Значение поля', null=True)
+    building = models.ForeignKey(BuildingRecord, verbose_name=u'Дом', null=False)
+
+    class Meta:
+        unique_together = ("building", "field")
 
 
 class FlatRecord(models.Model):
-    price = models.DecimalField(verbose_name=u'Цена', max_digits=19, decimal_places=10)
-    district = models.TextField(verbose_name=u'Район', null=False)
-    rooms = models.IntegerField(verbose_name=u'Кол-во комнат', null=False)
-    area = models.FloatField(verbose_name=u'Площадь', null=False)
-    company = models.ForeignKey(CompanyRecord, verbose_name=u'Компания', null=True)
-    related_info = models.TextField(verbose_name=u'Дополнительно', null=True)
+    building = models.ForeignKey(BuildingRecord, verbose_name=u'Дом', null=True)
+
+
+class FlatFieldRecord(models.Model):
+    field = models.TextField(verbose_name=u'Название поля', null=False)
+    value = models.TextField(verbose_name=u'Значение поля', null=True)
+    flat = models.ForeignKey(FlatRecord, verbose_name=u'Квартира', null=False)
+
+    # class Meta:
+       #  unique_together = ("flat", "field")
+

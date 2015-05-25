@@ -2,12 +2,21 @@
 from django.shortcuts import render
 from docloader.fileloader import Workbook
 from catcher.settings import UPLOAD_DIR
-from models import CompanyRecord, FlatRecord
+from models import *
 
+
+# todo ввод компания, этажность дома, адрес, район, срок сдачи, форма договора,  название комплекса, виды рассрочки,
+# todo ипотека
 wb = None
-DOC_FIELDS = ('price', 'area', 'district', 'rooms')
-DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Район', u'Кол-во комнат')
+DOC_FIELDS = ('price', 'area', 'abs_area', 'district', 'rooms', 'floor', 'primary_fee', 'room_height',
+              'kitchen_area', 'balcony')
+DOC_RU_FIELDS = (u'Цена', u'Площадь', u'Общ. площадь', u'Район', u'Комнат', u'Этаж', u'Первый взнос', u'Потолок',
+                 u'Пл. кухни', u'Балкон')
 DOC_FIELDS_DICT = dict(zip(DOC_RU_FIELDS, DOC_FIELDS))
+
+DOC_INPUT_FIELDS = [(u'building', u'Название объекта'), (u'house_floors', u'Этажность дома'), (u'address', u'Адрес'),
+                    (u'district', u'Район'), (u'release_date', u'Срок сдачи'), (u'agreement_form', u'Форма договора'),
+                    (u'payment_form', u'Виды рассрочки'), (u'mortgage', u'Ипотека')]
 
 
 def upload_view(request):
@@ -39,29 +48,23 @@ def handle_uploaded_file(f):
 class UploadResultView():
     def __init__(self, filename):
         self.sheets = []  # страницы, содержащие headlines - заголовки
-        self.sel_options = DOC_RU_FIELDS  # варианты целевых полей в базе
+        self.sel_options = zip(DOC_FIELDS, DOC_RU_FIELDS)  # варианты целевых полей в базе
+        self.single_fields = [(u'company', u'Компания')]
+        self.single_fields.extend(DOC_INPUT_FIELDS)
         global wb
         wb = Workbook(filename)
         self.wb = wb
+        self.fields_num = 25
         # self.rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
         # todo сделать анализ строк листов на заголовки
         sheet_names = wb.sheet_names()
-        i = 0
         for sh in sheet_names:
-            i += 1
-            self.sheets.append((sh, self.get_sheet_lines(sh), i))
+            self.sheets.append((sh, self.get_sheet_lines(sh)))
 
     def get_sheet_lines(self, sheet_name):
-        res = []
         sheet = self.wb.get_sheet_by_name(sheet_name)
-        for i in range(sheet.nrows):
-            res.append(sheet.row_values(i, 0, 25))
+        res = [(i, enumerate(sheet.row_values(i, 0, self.fields_num))) for i in range(sheet.nrows)]
         return res
-
-
-
-
-
 
 
 def parse_uploaded_file(request):
@@ -77,53 +80,65 @@ class ParseResultView():
     def __init__(self, request):
         global wb
         self.wb = wb
-        rows = zip(enumerate(wb.sheet_names()), wb.dimensions())
-        for r in rows:
-            dest_row_range_str = request.POST['range%d' % r[0][0]]
-            dest_fields_str = request.POST['map%d' % r[0][0]]
-            if len(dest_row_range_str) and len(dest_fields_str):
-                dest_row_range_list = [tuple(elem.strip(' ').split('-')) for elem in dest_row_range_str.split(',')]
-                dest_fields_list = [fld.strip('()').replace('\n', ' ') for fld in dest_fields_str.split('),(')]
-                fld_index_dict = self.get_indexes_dict(r[0][0], dest_fields_list)
-                for x, y in dest_row_range_list:
-                    self.save_rows_to_db(r[0][0], int(x), int(y), fld_index_dict)
-
-    def save_rows_to_db(self, sheet_no, row_from, row_to, fields):
-        print row_from, row_to
-        try:
-            sh = self.wb.get_sheet(sheet_no)
-            for i in range(row_from, row_to):
-                row = sh.row_values(i)
-                # company, created = \
-                #    CompanyRecord.objects.get_or_create(name=row[fields.get('company'])
-                spr = [j for j in range(len(row)) if j not in fields.values()]
-                rii = [unicode(row[k]) for k in spr if k != '']
-                related_info = ','.join(rii)
-                FlatRecord.objects.create(price=row[fields['price']],
-                                          district=row[fields['district']],
-                                          rooms=row[fields['rooms']],
-                                          area=row[fields['area']],
-                                          related_info=related_info)
-        except Exception as ex:
-            print ex
-
-    def get_indexes_dict(self, sheet_no, field_names):
-        res = dict()
-        try:
-            sh = self.wb.get_sheet(sheet_no)
-            idx = 0
-            fld_nams_enum = [(key, value) for value, key in enumerate(field_names)]
-            fld_names_dict = dict(fld_nams_enum)
+        self.fields_fmt = None
+        self.fields_num = 25
+        self.company = None  # company in proccess
+        self.building = None  # building in proccess
+        for sh in wb.sheets:  # for every table
+            # 1st - create or get building
+            self.save_company_building(sh.name, request)
+            # 2st - save flat rows
+            started = False
             for i in range(sh.nrows):
-                vals = [unicode(elem).replace('\n', ' ') for elem in sh.row_values(i)]
-                for j, fld in enumerate(vals):
-                    if fld in field_names:
-                        index = fld_names_dict[fld]
-                        res[DOC_FIELDS[index]] = j
-                        idx += 1
-                        if idx == len(DOC_FIELDS):
-                            return res
-            return None
+                row = sh.row_values(i, 0, self.fields_num)
+                row_1st_sel = request.POST[u'{0}_{1}'.format(sh.name, i)]
+                if row_1st_sel == 'header':
+                    self.get_field_fmt(request, sh.name, i, row)
+                elif row_1st_sel == 'start_range' and self.fields_fmt:
+                    self.save_row_to_db(row, self.fields_fmt)
+                    started = True
+                elif row_1st_sel == 'end_range' and self.fields_fmt:
+                    self.save_row_to_db(row, self.fields_fmt)
+                    started = False
+                elif self.fields_fmt and started:
+                    self.save_row_to_db(row, self.fields_fmt)
+
+    def save_company_building(self, sheet_name, request):
+        try:
+            self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST[sheet_name+'_company'].lower())
+            self.building, cr = BuildingRecord.objects.get_or_create(company=self.company,
+                                                                     name=request.POST[sheet_name+'_building'].lower())
+            for fld, fld_name in DOC_INPUT_FIELDS:
+                BuildingFieldRecord.objects.get_or_create(building=self.building, field=fld,
+                                                          value=request.POST[sheet_name+'_'+fld])
         except Exception as ex:
             print ex
-            return None
+
+    def get_field_fmt(self, request, sheet_name, row_num, row):
+        res = dict()
+        for i, fld in enumerate(row):
+            value = request.POST[u'sel_{0}_{1}_{2}'.format(sheet_name, row_num, i)]  # save fields mapping
+            if value == "other":  # for not selected rows save field name
+                res[i] = fld
+            else:   # save mappings for selected
+                res[value] = i
+        self.fields_fmt = res
+
+    def save_row_to_db(self, row, fields):
+        try:
+            flat = FlatRecord.objects.create(building=self.building)  # todo ключевые значения для квартиры
+            for fld in DOC_FIELDS:  # save mapped fields
+                value_key = fields.get(fld, None)
+                value = row[value_key] if value_key else None
+                FlatFieldRecord.objects.create(flat=flat,
+                                               field=fld,
+                                               value=value)
+            for i, fld in enumerate(row):  # save unmapped fields
+                value_key = fields.get(i, None)
+                if value_key:
+                    value = row[i]
+                    FlatFieldRecord.objects.create(flat=flat,
+                                                   field=value_key,
+                                                   value=value)
+        except Exception as ex:
+            print ex
