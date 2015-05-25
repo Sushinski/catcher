@@ -108,6 +108,8 @@ class ParseResultView():
             self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST[sheet_name+'_company'].lower())
             self.building, cr = BuildingRecord.objects.get_or_create(company=self.company,
                                                                      name=request.POST[sheet_name+'_building'].lower())
+            if not cr:
+                self.delete_building_objects()
             for fld, fld_name in DOC_INPUT_FIELDS:
                 BuildingFieldRecord.objects.get_or_create(building=self.building, field=fld,
                                                           value=request.POST[sheet_name+'_'+fld])
@@ -142,3 +144,15 @@ class ParseResultView():
                                                    value=value)
         except Exception as ex:
             print ex
+
+    def delete_building_objects(self):
+        if not self.building:
+            return
+        try:
+            bld = self.building
+            BuildingFieldRecord.objects.filter(building=bld).delete()
+            FlatFieldRecord.objects.filter(flat__building=bld).delete()
+            FlatRecord.objects.filter(building=bld).delete()
+        except Exception as ex:
+            print ex
+            return
