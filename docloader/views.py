@@ -51,8 +51,8 @@ def flat_request_view(request):
 
 
 def flat_request_result_view(request):
-    c = {'view': FlatRequestResultView()}
-    return render(request, 'flat_request_result_form.html', None)
+    c = {'view': FlatRequestResultView(request)}
+    return render(request, 'flat_request_result_view.html', None)
 
 
 class FlatRequestView():
@@ -67,8 +67,8 @@ class FlatRequestResultView():
             request_vals[id] = request.POST.get(id, None)
         #  enquire db for collected
         res = list()
-        res_qset = FlatRecord.objects.all().values_list('flat_id', flat=True)
-        for key, value in request_vals:
+        res_qset = FlatFieldRecord.objects.all().values_list('flat_id', flat=True)
+        for key, value in zip(request_vals.keys(), request_vals.values()):
             if value:
                 res.extend(list(res_qset.filter(field=key, value=value)))
         #  get result view rows
