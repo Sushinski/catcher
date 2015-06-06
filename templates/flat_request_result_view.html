@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title>Результаты поиска</title>
+</head>
+<body>
+        <h3>Результаты поиска</h3>
+        {% for r in view.rows %}
+            <br><br>
+            <table border="1">
+                <thead>
+                    {% for col in view.table_cols %}
+                        <th>col</th>
+                    {% endfor %}
+                </thead>
+                <tr>
+                    {% for fld in r %}
+                        <td>fld</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        {% endfor %}
+</body>
+</html>

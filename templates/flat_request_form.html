@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title>Поиск по квартирам</title>
+</head>
+<body>
+    <form method="post" action="flat_request_result/">
+        {% csrf_token %}
+         <br><br>
+        <h3>Введите параметры запроса</h3>
+        {% for fld in view.fields %}
+            <label for={{ fld.1 }}>{{ fld.0 }}</label><br>
+            <input type="text" name="{{ fld.1 }}" id="{{ fld.1 }}"/><br><br>
+        {% endfor %}
+        <input type="submit" value="Найти">
+    </form>
+</body>
+</html>

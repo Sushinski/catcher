@@ -45,6 +45,38 @@ def handle_uploaded_file(f):
         return None
 
 
+def flat_request_view(request):
+    c = {'view': FlatRequestView()}
+    return render(request, 'flat_request_form.html', c)
+
+
+def flat_request_result_view(request):
+    c = {'view': FlatRequestResultView()}
+    return render(request, 'flat_request_result_form.html', None)
+
+
+class FlatRequestView():
+    def __init__(self):
+        self.fields = zip(DOC_RU_FIELDS, DOC_FIELDS)
+
+
+class FlatRequestResultView():
+    def __init__(self, request):
+        request_vals = dict()
+        for name, id in zip(DOC_RU_FIELDS, DOC_FIELDS):  # collects field values
+            request_vals[id] = request.POST.get(id, None)
+        #  enquire db for collected
+        res = list()
+        res_qset = FlatRecord.objects.all().values_list('flat_id', flat=True)
+        for key, value in request_vals:
+            if value:
+                res.extend(list(res_qset.filter(field=key, value=value)))
+        #  get result view rows
+        rows = FlatRecord.objects.filter(id__in=res).prefetch_related('flatfieldrecord')
+
+
+
+
 class UploadResultView():
     def __init__(self, filename):
         self.sheets = []  # страницы, содержащие headlines - заголовки
