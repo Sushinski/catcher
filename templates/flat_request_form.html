@@ -10,8 +10,9 @@
          <br><br>
         <h3>Введите параметры запроса</h3>
         {% for fld in view.fields %}
-            <label for={{ fld.1 }}>{{ fld.0 }}</label><br>
-            <input type="text" name="{{ fld.1 }}" id="{{ fld.1 }}"/><br><br>
+                <div>{{ fld.0 }},  От: <input type="text" name="from_{{ fld.1 }}" id="from_{{ fld.1 }}"/>
+                  До:   <input type="text" name="to_{{ fld.1 }}" id="to_{{ fld.1 }}"/></div>
+                <br><br>
         {% endfor %}
         <input type="submit" value="Найти">
     </form>
