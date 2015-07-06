@@ -14,7 +14,7 @@ class BuildingRecord(models.Model):
 class BuildingFieldRecord(models.Model):
     field = models.TextField(verbose_name=u'Название поля', null=False)
     value = models.TextField(verbose_name=u'Значение поля', null=True)
-    building = models.ForeignKey(BuildingRecord, verbose_name=u'Дом', null=False)
+    building = models.ForeignKey(BuildingRecord, verbose_name=u'Дом', null=False, related_name='building_field')
 
     class Meta:
         unique_together = ("building", "field")
@@ -27,7 +27,7 @@ class FlatRecord(models.Model):
 class FlatFieldRecord(models.Model):
     field = models.TextField(verbose_name=u'Название поля', null=False)
     value = models.TextField(verbose_name=u'Значение поля', null=True)
-    flat = models.ForeignKey(FlatRecord, verbose_name=u'Квартира', null=False)
+    flat = models.ForeignKey(FlatRecord, verbose_name=u'Квартира', null=False, related_name='flat_field')
 
     # class Meta:
        #  unique_together = ("flat", "field")

@@ -62,6 +62,7 @@ class FlatRequestView():
 
 class FlatRequestResultView():
     def __init__(self, request):
+        self.rows = []
         request_vals = dict()
         fields = zip(DOC_RU_FIELDS, DOC_FIELDS)
         for name, id in fields:  # collects field values
@@ -72,11 +73,18 @@ class FlatRequestResultView():
         for key, (value_from, value_to) in zip(request_vals.keys(), request_vals.values()):
             if value_from and value_to:
                 res.extend(list(res_qset.filter(field=key, value__gt=value_from, value__lt=value_to)))
-        #  get result view rows
-        self.table_cols = [(u'Название объекта', u'building'), (u'Адрес', u'address')]
+        # get result view rows
+        self.table_cols = [(u'Название объекта', u'building'), (u'Адрес', u'building')]
         self.table_cols.extend(fields)
-        self.rows = list(FlatRecord.objects.filter(id__in=res).select_related('building').
-                         prefetch_related('building__buildingfieldrecord_set').prefetch_related('flatfieldrecord_set'))
+        rows = FlatRecord.objects.filter(id__in=res).select_related('building').prefetch_related('flat_field'). \
+            prefetch_related('building__building_field')
+        for s in rows:
+            c_row_1 = list(s.building.building_field.filter(field__in=(u'building', u'address')). \
+                    values_list('value', flat=True))
+            c_row_2 = list(s.flat_field.filter(field__in=[y for x, y in self.table_cols[2:]]). \
+                    values_list('value', flat=True))
+            c_row_1.extend(c_row_2)
+            self.rows.append(c_row_1)
         pass
 
 
