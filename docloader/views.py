@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from docloader.fileloader import Workbook
 from catcher.settings import UPLOAD_DIR
 from models import *
@@ -45,6 +45,41 @@ def handle_uploaded_file(f):
         return None
 
 
+def flat_request_view(request):
+    c = {'view': FlatRequestView()}
+    return render(request, 'flat_request_form.html', c)
+
+
+def flat_request_result_view(request):
+    c = {'view': FlatRequestResultView(request)}
+    return render(request, 'flat_request_result_view.html', c)
+
+
+class FlatRequestView():
+    def __init__(self):
+        self.fields = zip(DOC_RU_FIELDS, DOC_FIELDS)
+
+
+class FlatRequestResultView():
+    def __init__(self, request):
+        request_vals = dict()
+        fields = zip(DOC_RU_FIELDS, DOC_FIELDS)
+        for name, id in fields:  # collects field values
+            request_vals[id] = (request.POST.get('from_%s' % id, 0), request.POST.get('to_%s' % id, 99999999))
+        # enquire db for collected
+        res = list()
+        res_qset = FlatFieldRecord.objects.all().values_list('flat_id', flat=True)
+        for key, (value_from, value_to) in zip(request_vals.keys(), request_vals.values()):
+            if value_from and value_to:
+                res.extend(list(res_qset.filter(field=key, value__gt=value_from, value__lt=value_to)))
+        #  get result view rows
+        self.table_cols = [(u'Название объекта', u'building'), (u'Адрес', u'address')]
+        self.table_cols.extend(fields)
+        self.rows = list(FlatRecord.objects.filter(id__in=res).select_related('building').
+                         prefetch_related('building__buildingfieldrecord_set').prefetch_related('flatfieldrecord_set'))
+        pass
+
+
 class UploadResultView():
     def __init__(self, filename):
         self.sheets = []  # страницы, содержащие headlines - заголовки
@@ -72,8 +107,8 @@ def parse_uploaded_file(request):
     view = None
     if request.method == 'POST':
         view = ParseResultView(request)
-    c = {'view': view, }
-    return render(request, 'upload_result_view.html', c)
+    # todo parse status
+    return redirect('flat_request_view')
 
 
 class ParseResultView():
@@ -105,12 +140,15 @@ class ParseResultView():
 
     def save_company_building(self, sheet_name, request):
         try:
-            self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST[sheet_name+'_company'].lower())
+            self.company, cr = CompanyRecord.objects.get_or_create(name=request.POST[sheet_name + '_company'].lower())
             self.building, cr = BuildingRecord.objects.get_or_create(company=self.company,
-                                                                     name=request.POST[sheet_name+'_building'].lower())
+                                                                     name=request.POST[
+                                                                         sheet_name + '_building'].lower())
+            if not cr:
+                self.delete_building_objects()
             for fld, fld_name in DOC_INPUT_FIELDS:
                 BuildingFieldRecord.objects.get_or_create(building=self.building, field=fld,
-                                                          value=request.POST[sheet_name+'_'+fld])
+                                                          value=request.POST[sheet_name + '_' + fld])
         except Exception as ex:
             print ex
 
@@ -120,7 +158,7 @@ class ParseResultView():
             value = request.POST[u'sel_{0}_{1}_{2}'.format(sheet_name, row_num, i)]  # save fields mapping
             if value == "other":  # for not selected rows save field name
                 res[i] = fld
-            else:   # save mappings for selected
+            else:  # save mappings for selected
                 res[value] = i
         self.fields_fmt = res
 
@@ -142,3 +180,15 @@ class ParseResultView():
                                                    value=value)
         except Exception as ex:
             print ex
+
+    def delete_building_objects(self):
+        if not self.building:
+            return
+        try:
+            bld = self.building
+            BuildingFieldRecord.objects.filter(building=bld).delete()
+            FlatFieldRecord.objects.filter(flat__building=bld).delete()
+            FlatRecord.objects.filter(building=bld).delete()
+        except Exception as ex:
+            print ex
+            return

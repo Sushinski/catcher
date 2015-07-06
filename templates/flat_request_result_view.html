@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title>Результаты поиска</title>
+</head>
+<body>
+        <h3>Результаты поиска</h3>
+            <br><br>
+            <table border="1">
+                <thead>
+                    {% for col in view.table_cols %}
+                        <th>{{ col.0 }}</th>
+                    {% endfor %}
+                </thead>
+                {% for r in view.rows %}
+                <tr>
+                    <td>{{ r.building }}</td>
+                    <td>{{ r.address }}</td>
+                    {% for fld in r. %}
+                    <td>{{ r.price }}</td>
+                    <td>{{ r.area }}</td>
+                    <td>{{ r.abs_area }}</td>
+                    <td>{{ r.district }}</td>
+                    <td>{{ r.rooms }}</td>
+                    <td>{{ r.floor }}</td>
+                    <td>{{ r.primary_fee }}</td>
+                    <td>{{ r.room_height }}</td>
+                    <td>{{ r.kitchen_area }}</td>
+                    <td>{{ r.balcony }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+</body>
+</html>
