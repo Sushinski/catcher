@@ -79,9 +79,9 @@ class FlatRequestResultView():
         rows = FlatRecord.objects.filter(id__in=res).select_related('building').prefetch_related('flat_field'). \
             prefetch_related('building__building_field')
         for s in rows:
-            c_row_1 = list(s.building.building_field.filter(field__in=(u'building', u'address')). \
+            c_row_1 = list(s.building.building_field.filter(field__in=(u'building', u'address')).\
                     values_list('value', flat=True))
-            c_row_2 = list(s.flat_field.filter(field__in=[y for x, y in self.table_cols[2:]]). \
+            c_row_2 = list(s.flat_field.filter(field__in=[y for x, y in self.table_cols[2:]]).\
                     values_list('value', flat=True))
             c_row_1.extend(c_row_2)
             self.rows.append(c_row_1)
